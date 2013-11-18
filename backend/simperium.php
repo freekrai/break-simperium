@@ -41,7 +41,11 @@ class Simperium{
 	public function get_token(){
 		return $this->token;
 	}
-
+	public function set_token($token){
+		$this->token = $token;
+		return $this->token;
+	}
+	
 	public function create($username, $password){
 		$headers = array(
 			'X-Simperium-API-Key: '.$this->api_key
