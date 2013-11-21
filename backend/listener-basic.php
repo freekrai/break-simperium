@@ -15,7 +15,8 @@
 	while( $a ){
 		$changes = $simperium->todo2->changes($cv,true);
 		foreach($changes as $change ){
-			echo '<pre>'.print_r($change,true).'</pre><hr />';
 			$cv = $change->cv;
+			$data = $change->d;
+			echo '<pre>'.print_r($data,true).'</pre><hr />';			
 		}
 	}

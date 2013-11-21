@@ -8,38 +8,30 @@
 	$simperium = new Simperium($appname,$apikey);
 	$simperium->set_token($token);
 
-echo $token. ' ---- '.$simperium->get_token().'<br />';
+//	grab a random number between 1 and 20:
+	$len = rand(1,20);
 
-//	echo '<hr />';
+//	get random text:
+	$text = get_ipsum($len,'short',false);
+
+//	generate a unique UUID to use as the post id:
 	$todo1_id = $simperium->generate_uuid();
-	$simperium->todo2->post( $todo1_id,array('text'=>'Ok.. how about this one?<br /><img src="http://media.giphy.com/media/Dp7POJcVxRDUc/giphy.gif" />', 'done'=>'False') );
 
-//	$simperium->todo2->post( '98de2d65-6541-408c-ab4d-a800b0e9ca82', array('done'=>'True') );
-/*
-echo '<hr />';
-$ret = $simperium->todo2->index();
-$simperium->_debug($ret);
-*/
-/*
-echo '<hr />';
-$ret = $simperium->todo2->index(true);
-$simperium->_debug($ret);
-*/
-/*
-echo '<hr />';
-foreach( $simperium->todo2->index()->index as $v ){
-	echo $v->id.'<br />';
-	$ret = $simperium->get( $v->id );
-	$simperium->_debug($ret);
-}
-*/
-/*
-echo '<hr />';
-$ret = $simperium->todo2->get('61a27242-e268-4951-89b8-1d42b379d353');
+//	save the post to simperium:
+	$simperium->todo2->post( $todo1_id,array(
+		'text'=>$text,
+		'timeStamp' => time(),
+		'done'=>'False'
+	) );
 
-$simperium->_debug($ret);
-
-echo '<hr />';
-$buckets = $simperium->buckets();
-$simperium->_debug( $buckets );
-*/
+//	grab random text:
+	function get_ipsum($len = 10, $size = 'short', $headers = true){
+		$url = 'http://loripsum.net/api/'.$len.'/'.$size.($headers ? '/headers' : null );
+		$ch = curl_init();
+		$timeout=5;
+		$ch = curl_init($url);
+		curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
+		$output = curl_exec($ch);
+		curl_close($ch);
+		return $output;
+	}
