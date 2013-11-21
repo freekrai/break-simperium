@@ -3,9 +3,19 @@
 // [LocalStorage adapter](backbone-localstorage.html)
 // to persist Backbone models within your browser.
 
+function generateUUID() {
+    var d = new Date().getTime();
+    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = (d + Math.random()*16)%16 | 0;
+        d = Math.floor(d/16);
+        return (c=='x' ? r : (r&0x7|0x8)).toString(16);
+    });
+    return uuid;
+};
+var myuuid = generateUUID();
+
 // Load the application once the DOM is ready, using `jQuery.ready`:
 $(function(){
-
 	app_id = 'authorities-platforms-ed8';
 		simperium = new Simperium( app_id, {
 		token: '59a9eff00c80457686aece62a0047e2c'
@@ -86,8 +96,11 @@ $(function(){
 		// Re-render the texts of the todo item.
 		render: function() {
 			this.$el.html(this.template(this.model.toJSON()));
+
+console.log( myuuid + ' --- ' + this.model.get('text') );
+
 //			this.$el.toggleClass('done', this.model.get('done'));
-			this.input = this.$('.edit');
+//			this.input = this.$('.edit');
 			return this;
 		},
 		// Toggle the `"done"` state of the model.
