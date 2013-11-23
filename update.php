@@ -14,32 +14,32 @@
 //	unique UUID to identify this client.
 	$client_id = $simperium->generate_uuid();
 
-//	grab a random number between 1 and 20:
-	$len = rand(1,20);
-
-//	get random text:
-	$text = get_ipsum($len,'short',false);
-
-//	generate a unique UUID to use as the post id:
-	$todo1_id = $simperium->generate_uuid();
-
 //	save the post to simperium:
 	$data = array(
 		'client' => $client_id,
-		'status' => 'sending'
+		'status' => 'updating'
 	);
-	datagarde::value( 'freekrai@me.com',"Sending Message ",json_encode($data), 'listener' );
+	datagarde::value( 'freekrai@me.com',"Updating Message ",json_encode($data), 'listener' );
+	foreach( $simperium->liveblog->index()->index as $v ){
+		echo $v->id.'<br />';
+		$ret = $simperium->get( $v->id );
 
-	$simperium->liveblog->post( $todo1_id,array(
-		'text'=>$text,
-		'timeStamp' => time(),
-		'done'=>'False'
-	) );
+//	grab a random number between 1 and 20:
+		$len = rand(1,20);
+	
+//	get random text:
+		$text = get_ipsum($len,'short',false);
+
+//	update this post
+		$simperium->liveblog->post( $v->id,array(
+			'text'=>$text,
+		) );
+	}
 	$data = array(
 		'client' => $client_id,
-		'status' => 'sent'
+		'status' => 'updated'
 	);
-	datagarde::value( 'freekrai@me.com',"Sending Message ",json_encode($data), 'listener' );
+	datagarde::value( 'freekrai@me.com',"Updating Message ",json_encode($data), 'listener' );
 
 //	grab random text:
 	function get_ipsum($len = 10, $size = 'short', $headers = true){
