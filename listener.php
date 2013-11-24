@@ -14,8 +14,9 @@
 	
 	//	unique UUID to identify this listener.
 	$client_id = $simperium->generate_uuid();
-	
-	$cv = '';
+
+//	the id where we left off last time we ran it:
+	$cv = '52917ce2ba5fdc4ed738e596';
 	$numTodos = 0;
 	$a = true;
 	while( $a ){
@@ -24,7 +25,6 @@
 			$cv = $change->cv;
 			$data = $change->d;
 			echo $cv."\n-------\n";
-//			echo '<pre>'.print_r($data,true).'</pre><hr />';
 			if( $data ){
 				$data->id = $change->cv;
 				$data->client = $client_id;
@@ -32,6 +32,7 @@
 				unset($data->timeStamp);
 			}
 			$data = (array) $data;
-			datagarde::value( 'freekrai@me.com',"Message Recieved",json_encode($data), 'listener' );
+#			datagarde::value( 'freekrai@me.com',"Message Recieved",json_encode($data), 'listener' );
+			datagarde::value( 'freekrai@me.com',"Post Received",json_encode(array('client'=>$change->cv)), 'listener' );
 		}
 	}

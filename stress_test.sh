@@ -1,17 +1,19 @@
 #!/bin/sh
-curl -s "http://rser.me/symperium/post.php?[1-5]" &
+curl -s "http://rser.me/symperium/post.php?[1-100]" &
 pidlist="$pidlist $!" 
-curl -s "http://rser.me/symperium/post.php?[1-5]" &
+curl -s "http://rser.me/symperium/post.php?[1-100]" &
 pidlist="$pidlist $!" 
-curl -s "http://rser.me/symperium/post.php?[1-5]" &
+curl -s "http://rser.me/symperium/post.php?[1-100]" &
 pidlist="$pidlist $!" 
-curl -s "http://rser.me/symperium/post.php?[1-5]" &
+curl -s "http://rser.me/symperium/post.php?[1-100]" &
 pidlist="$pidlist $!" 
-curl -s "http://rser.me/symperium/post.php?[1-5]" &
+curl -s "http://rser.me/symperium/post.php?[1-100]" &
 pidlist="$pidlist $!" 
-curl -s "http://rser.me/symperium/post.php?[1-5]" &
+curl -s "http://rser.me/symperium/post.php?[1-100]" &
 pidlist="$pidlist $!" 
-curl -s "http://rser.me/symperium/post.php?[1-5]" &
+curl -s "http://rser.me/symperium/post.php?[1-100]" &
+pidlist="$pidlist $!"  
+curl -s "http://rser.me/symperium/post.php?[1-100]" &
 pidlist="$pidlist $!"  
 
 for job in $pidlist do 

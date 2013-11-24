@@ -20,7 +20,7 @@ $(function(){
 		simperium = new Simperium( app_id, {
 		token: '59a9eff00c80457686aece62a0047e2c'
 	} );
-	todoBucket = simperium.bucket( 'todo2' );
+	todoBucket = simperium.bucket( 'liveblog' );
 	
 	// Todo Model
 	// ----------
