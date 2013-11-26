@@ -19,6 +19,17 @@ Logs will be stored inside datagarde.com, a stats collection website that will j
 
 Each individual instance will have a unique UUID associated with it so we can track it.
 
+To get started, create a file called config.php and add the following variables:
+
+```php
+<?php
+	$appname = 'YOUR-APP-ID';
+	$apikey = 'YOUR-API-KEY';
+	$token = 'YOUR-USER_TOKEN';
+?>
+
+Without this file, nothing will work.
+
 Early tests on post.php and listener.php
 
 I tested with up to 1,155 concurrent connections over a period of 60 seconds.

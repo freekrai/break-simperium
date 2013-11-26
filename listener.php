@@ -4,11 +4,8 @@
 	include("datagarde.php");
 
 	include("simperium.php");
-
-
-	$appname = 'authorities-platforms-ed8';
-	$apikey = 'ac91e724b9ec461d9ca31796c27e9fed';
-	$token = '59a9eff00c80457686aece62a0047e2c';
+	include("config.php");
+	
 	$simperium = new Simperium($appname,$apikey);
 	$simperium->set_token($token);	
 	
@@ -25,7 +22,7 @@
 			$cv = $change->cv;
 			$data = $change->d;
 			echo $cv."\n-------\n";
-			echo $data->text."\n";
+//			echo $data->text."\n";
 			if( $data ){
 				$data->id = $change->cv;
 				$data->client = $client_id;

@@ -188,7 +188,7 @@ class Simperium{
 			rtrim($fields_string,'&');
 			$url = $url."?".$fields_string;
 		}
-#		echo $url.'<br />';
+//		echo $url.'<br />';
 		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 		curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
