@@ -25,6 +25,7 @@
 			$cv = $change->cv;
 			$data = $change->d;
 			echo $cv."\n-------\n";
+			echo $data->text."\n";
 			if( $data ){
 				$data->id = $change->cv;
 				$data->client = $client_id;
