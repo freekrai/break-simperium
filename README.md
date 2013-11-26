@@ -27,4 +27,4 @@ The results that were generated were a fastest time of 179 ms, a slowest time of
 
 The timing on the seperate clients showed when the messages arrived to be slightly out of sync by 1 to up to 10 seconds between each client when the message arrived.
 
-One thing worth noting, according to (https://simperium.com/docs/reference/http/#bucketall)[https://simperium.com/docs/reference/http/#bucketall], when you pass cv as a variable then it is supposed to resume from that record, but I've found it starts from the beginning.
+One thing worth noting, according to https://simperium.com/docs/reference/http/#bucketall, when you pass cv as a variable then it is supposed to resume from that record, but I've found it starts from the beginning.
