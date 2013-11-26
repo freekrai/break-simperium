@@ -29,6 +29,7 @@ To get started, create a file called config.php and add the following variables:
 	$apikey = 'YOUR-API-KEY';
 	$token = 'YOUR-USER_TOKEN';
 ?>
+```
 
 Without this file, nothing will work.
 
