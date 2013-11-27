@@ -13,7 +13,7 @@
 	$client_id = $simperium->generate_uuid();
 
 //	the id where we left off last time we ran it:
-	$cv = '52917ce2ba5fdc4ed738e596';
+	$cv = '5294e7c0ba5fdc4ed7f6a17e';
 	$numTodos = 0;
 	$a = true;
 	while( $a ){
@@ -30,7 +30,7 @@
 				unset($data->timeStamp);
 			}
 			$data = (array) $data;
-#			datagarde::value( 'freekrai@me.com',"Message Recieved",json_encode($data), 'listener' );
-			datagarde::value( 'freekrai@me.com',"Post Received",json_encode(array('client'=>$change->cv)), 'listener' );
+#			datagarde::value( 'freekrai@me.com',"Message Recieved [".date('F j, Y')."]",json_encode($data), 'listener' );
+			datagarde::value( 'freekrai@me.com',"Post Received [".date('F j, Y')."]",json_encode(array('client'=>$change->cv)), 'listener' );
 		}
 	}

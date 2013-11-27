@@ -27,7 +27,7 @@
 		'client' => $client_id,
 		'status' => 'sending'
 	);
-	datagarde::value( 'freekrai@me.com',"Sending Message ",json_encode($data), 'listener' );
+	datagarde::value( 'freekrai@me.com',"Sending Message [".date('F j, Y')."]",json_encode($data), 'listener' );
 
 	$simperium->liveblog->post( $todo1_id,array(
 		'text'=>$text,
@@ -38,7 +38,7 @@
 		'client' => $client_id,
 		'status' => 'sent'
 	);
-	datagarde::value( 'freekrai@me.com',"Sending Message ",json_encode($data), 'listener' );
+	datagarde::value( 'freekrai@me.com',"Sending Message [".date('F j, Y')."]",json_encode($data), 'listener' );
 
 //	grab random text:
 	function get_ipsum($len = 10, $size = 'short', $headers = true){
