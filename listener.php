@@ -18,7 +18,7 @@ $simperium->set_token($token);
 $client_id = $simperium->generate_uuid();
 
 //	the id where we left off last time we ran it:
-$cv = '5296db6eba5fdc4ed760adb7';
+$cv = '5296dc8dba5fdc4ed760da7c';
 $numTodos = 0;
 $a = true;
 while( $a ){
