@@ -2,13 +2,11 @@
 /*
 	php listener.php 
 */
-#print_r($argv);
-#die();
 
 date_default_timezone_set('America/Los_Angeles');
-include("datagarde.php");
+include("system/simperium.php");
+include("system/pdo.class.php");
 
-include("simperium.php");
 include("config.php");
 
 $simperium = new Simperium($appname,$apikey);
@@ -18,7 +16,8 @@ $simperium->set_token($token);
 $client_id = $simperium->generate_uuid();
 
 //	the id where we left off last time we ran it:
-$cv = '5296e349ba5fdc4ed761f972';
+$cv = get_last_cv();
+
 $numTodos = 0;
 $a = true;
 while( $a ){
@@ -35,7 +34,18 @@ while( $a ){
 			unset($data->timeStamp);
 		}
 		$data = (array) $data;
-#			datagarde::value( 'freekrai@me.com',"Message Recieved [".date('F j, Y')."]",json_encode($data), 'listener' );
-		datagarde::value( 'freekrai@me.com',"Post Received [".date('F j, Y')."]",json_encode(array('client'=>$change->cv)), 'listener' );
+		update_log("Post Received [".date('F j, Y')."]",$change->cv);
 	}
+}
+//	store the message into the log table
+function update_log($name,$value){
+	global $client_id;
+	$pdo = Db::singleton();
+	$pdo->query( "INSERT INTO log SET log_name='{$name}',log_value='{$value}',log_client='{$client_id}',log_type='l';" );
+}
+
+function get_last_cv(){
+	$pdo = Db::singleton();
+	$row = $pdo->query( "SELECT log_value AS cv from log WHERE log_type = 'l' ORDER BY log_id DESC LIMIT 1;" )->fetch();
+	return $row['cv'];
 }
