@@ -41,7 +41,7 @@ The $dbsocket variable is used if testing on a local host with Mamp, as Mamp wan
 
 **Without this file, nothing will work.**
 
-If you are testing this locally, then you will want to download and install https://ngrok.com/, as that will let you open a tunnel to the outside due to PHP's curl client not wanting a port in the url string, such as port 8888 like mamp uses.
+If you are testing this locally, then you will want to download and install https://ngrok.com/, as that will let you open a tunnel to the outside due to PHP's curl client not wanting a port in the url string, such as port 8888 like Mamp uses.
 
 ngrok also works nicely due to having it's own request inspector at http://localhost:4040 when ngrok is running.
 
@@ -49,13 +49,17 @@ ngrok also works nicely due to having it's own request inspector at http://local
 
 There are two parts to this test, first open up terminal and load the listener:
 
-	php listener.php
+	php listener.php &
 	
-Now, you want to open a new terminal tab and run the stress test tool.
+Listener is set to die after running for 15 minutes, you can adjust this by changing the $how_long_to_live variable at the start of listener.
+
+The idea with this, is you can run listener repeatedly and let it run in the background, gather new posts and store in the database when each has arrived.
+
+Now, you want to open a new terminal tab and run the stress test tool...
 
 stress_test.php is a handy tool for stress testing a system, you call it by:
 
-	php stress_test.php url number-of-clients
+	php stress_test.php url-to-test number-of-clients
 	
 This will then trigger a test of the url you passed, with a concurrent number of connections specified by number-of-clients
 
