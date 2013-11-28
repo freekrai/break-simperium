@@ -23,14 +23,14 @@
 	$todo1_id = $simperium->generate_uuid();
 
 //	save the post to simperium:
-	update_log( "Sending Message [".date('F j, Y')."]",'sending');
+	update_log( "Sending Message",'sending');
 
 	$simperium->liveblog->post( $todo1_id,array(
 		'text'=>$text,
 		'timeStamp' => time(),
 		'done'=>'False'
 	) );
-	update_log( "Sending Message [".date('F j, Y')."]",'sent');
+	update_log( "Sending Message",'sent');
 
 	//	store the message into the log table
 	function update_log($name,$value){

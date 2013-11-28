@@ -33,17 +33,25 @@ To get started, create a file called config.php and add the following variables:
 	$dbname = 'YOUR-DB-NAME';
 	$dbuser = 'YOUR-DB-USER';
 	$dbpass = 'YOUR-DB-PASS';
-	$dbsocket = true or false;
+	$dbsocket = false;
 ?>
 ```
 
-The $dbsocket variable is used if testing on a local host with Mamp, as mamp wants to connect via sockets rather than tcp. By default, this should be set to false.
+The $dbsocket variable is used if testing on a local host with Mamp, as Mamp wants to connect via sockets rather than TCP. By default, this should be set to false.
 
 **Without this file, nothing will work.**
 
-If you are testing this locally, then you will want to download and install https://ngrok.com/, as that will let you open a tunnel to the outside due to PHP's curl client not wanting a port in the url string 
+If you are testing this locally, then you will want to download and install https://ngrok.com/, as that will let you open a tunnel to the outside due to PHP's curl client not wanting a port in the url string, such as port 8888 like mamp uses.
+
+ngrok also works nicely due to having it's own request inspector at http://localhost:4040 when ngrok is running.
 
 ### The actual test
+
+There are two parts to this test, first open up terminal and load the listener:
+
+	php listener.php
+	
+Now, you want to open a new terminal tab and run the stress test tool.
 
 stress_test.php is a handy tool for stress testing a system, you call it by:
 

@@ -1,9 +1,10 @@
 <?php
 	date_default_timezone_set('America/Los_Angeles');
-	include("datagarde.php");
 
-	//	Simperium PHP library
-	include("simperium.php");
+	include("system/simperium.php");
+	include("system/pdo.class.php");
+
+	include("config.php");
 
 	include("config.php");
 
@@ -15,11 +16,7 @@
 	$client_id = $simperium->generate_uuid();
 
 //	save the post to simperium:
-	$data = array(
-		'client' => $client_id,
-		'status' => 'updating'
-	);
-	datagarde::value( 'freekrai@me.com',"Updating Message [".date('F j, Y')."]",json_encode($data), 'listener' );
+	update_log( "Updating Message",'updating');
 	foreach( $simperium->liveblog->index()->index as $v ){
 		echo $v->id.'<br />';
 		$ret = $simperium->get( $v->id );
@@ -35,11 +32,15 @@
 			'text'=>$text,
 		) );
 	}
-	$data = array(
-		'client' => $client_id,
-		'status' => 'updated'
-	);
-	datagarde::value( 'freekrai@me.com',"Updating Message [".date('F j, Y')."]",json_encode($data), 'listener' );
+	update_log( "Updating Message",'updated');
+
+	//	store the message into the log table
+	function update_log($name,$value){
+		global $client_id;
+		$pdo = Db::singleton();
+		$pdo->query( "INSERT INTO log SET log_name='{$name}',log_value='{$value}',log_client='{$client_id}',log_type='u';" );
+	}
+
 
 //	grab random text:
 	function get_ipsum($len = 10, $size = 'short', $headers = true){
