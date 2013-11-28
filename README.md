@@ -33,6 +33,12 @@ To get started, create a file called config.php and add the following variables:
 
 Without this file, nothing will work.
 
+stress_test.sh is a handy tool for stress testing a system, you call it by:
+
+	time ./stress_test.sh url number-of-clients random-wait
+	
+This will then trigger a test of the url you passed, with a concurrent number of connections specified by number-of-clients
+
 ## Early tests on post.php and listener.php
 
 I tested with up to 1,155 concurrent connections over a period of 60 seconds.

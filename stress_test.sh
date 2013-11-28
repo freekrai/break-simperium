@@ -23,7 +23,7 @@ if [[ $2 == "" ]]; then
 fi
 
 for ((i=0; i<$span; i++)); do
-	time curl -s "$url?[1-5]"  &
+	curl -s "$url?[1-5]"  &
     if [[ $randomwait == "y" ]]; then
         sleep ${RANDOM:0:1};
     fi
