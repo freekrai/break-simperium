@@ -33,11 +33,15 @@ To get started, create a file called config.php and add the following variables:
 
 Without this file, nothing will work.
 
-stress_test.sh is a handy tool for stress testing a system, you call it by:
+stress_test.php is a handy tool for stress testing a system, you call it by:
 
-	time ./stress_test.sh url number-of-clients random-wait
+	php stress_test.php url number-of-clients
 	
 This will then trigger a test of the url you passed, with a concurrent number of connections specified by number-of-clients
+
+Once completed, you will get a report back for each request, and total time spent sending the request. We can then look and see where any bottle necks began occurring.
+
+This will let you see how each post has done, and on average where any slow down may occur.
 
 ## Early tests on post.php and listener.php
 
