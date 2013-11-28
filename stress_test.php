@@ -59,8 +59,7 @@ class Stress_Test{
 	}
 
 	private function microtime() {
-		list($usec, $sec) = explode(" ", microtime());	
-		return ((float)$usec + (float)$sec);
+		return microtime(true);
 	}
 
 	private function alert($msg) {
@@ -77,20 +76,18 @@ class Stress_Test{
 			}
 			curl_multi_select($this->multiHandle);
 			while ($multiInfo = curl_multi_info_read($this->multiHandle, $msgs)) {				
-				$this->responded_clients_time += $this->elapsed($this->info[$multiInfo['handle']]['time']);
-				$this->responded_clients++;
 				$this->_showData($multiInfo);
 				curl_multi_remove_handle($this->multiHandle, $multiInfo['handle']);
 				curl_close($multiInfo['handle']);
 			}
 		} while ($running || $this->_moreTodo());
+
 		$msg = '';
 		$msg .= "avg rsp time: " . round($this->responded_clients_time / $this->responded_clients, 2) . "s, ";
 		$msg .= "avg rsp/min: " . round($this->responded_clients / $this->elapsed(), 2) * 60 . ", ";
 		$msg .= "responses: " . $this->responded_clients . ", ";
 		$msg .= "elapsed: " . $this->elapsed() . "s";
 		$this->alert($msg);
-		return $this;
 	}    
 	
 	private function _addHandles($num){
@@ -103,13 +100,16 @@ class Stress_Test{
 			$this->info[$handle]['time'] = $this->microtime();
 			$this->currentIndex++;
 		}
-	}        
+	}
 	
 	private function _moreToDo(){
 		return count($this->allToDo) - $this->currentIndex;
 	}
 	
 	private function _showData($multiInfo){
+		$this->responded_clients_time += $this->elapsed( $this->info[$multiInfo['handle']]['time'] );
+		$this->responded_clients++;
+
 		$this->info[$multiInfo['handle']]['multi'] = $multiInfo;
 		$this->info[$multiInfo['handle']]['curl']  = curl_getinfo($multiInfo['handle']);
 #		$this->alert( print_r($this->info[$multiInfo['handle']],true) );
@@ -118,7 +118,7 @@ class Stress_Test{
 		$this->alert( 
 			$this->info[$multiInfo['handle']]['key'] . ' - ' . 
 			$this->info[$multiInfo['handle']]['url'] . ' - ' . 
-			$this->elapsed($this->info[$multiInfo['handle']]['time']).'s' 
+			$this->elapsed( $this->info[$multiInfo['handle']]['time'] ).'s' 
 		);
 	}
 	function __destruct() {
