@@ -4,6 +4,7 @@
 */
 
 	$how_long_to_live = 15 * 60;	//	15 minutes
+	$silent = true;
 
 	set_time_limit( $how_long_to_live );
 	ini_set('max_execution_time', $how_long_to_live);
@@ -14,7 +15,7 @@
 	
 	include("config.php");
 		
-	$client = new Simperium_Listener($appname,$apikey,$token,$how_long_to_live);
+	$client = new Simperium_Listener($appname,$apikey,$token,$how_long_to_live,$silent);
 	$client->listen();
 		
 	class Simperium_Listener{
@@ -22,12 +23,14 @@
 		private $client_id;
 		private $started;
 		private $how_long_to_live;
+		private $silent;
 		
-		public function __construct($appname,$apikey,$token,$how_long_to_live){
+		public function __construct($appname,$apikey,$token,$how_long_to_live,$silent = false){
 			$this->simperium = new Simperium($appname,$apikey);
 			$this->simperium->set_token($token);	
 			$this->started = $this->microtime();
 			$this->how_long_to_live = $how_long_to_live;
+			$this->silent = $silent;
 
 			$this->alert('Started at: ' . date('Y-m-d h:i:s') . '. PID: ' . getmypid());
 
@@ -43,6 +46,10 @@
 			$numTodos = 0;
 			$a = true;
 			while( $a ){
+				if( file_exists('/tmp/nomorelistener') ){
+					$this->alert( "No More Listener file found in /tmp. Shutting down" );
+					exit;
+				}
 				$changes = $this->simperium->liveblog->changes($cv,true);
 				foreach($changes as $change ){
 					$cv = $change->cv;
@@ -81,9 +88,11 @@
 			return microtime(true);
 		}
 		private function alert($msg) {
-			echo $msg . (!empty($_SERVER['HTTP_USER_AGENT']) ? "<br />" : "\n");
-			ob_flush();
-			flush();
+			if( !$this->silent ){
+				echo $msg . (!empty($_SERVER['HTTP_USER_AGENT']) ? "<br />" : "\n");
+				ob_flush();
+				flush();
+			}
 		}
 		function __destruct() {
 			ob_end_clean();

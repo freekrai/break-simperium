@@ -49,9 +49,19 @@ ngrok also works nicely due to having it's own request inspector at http://local
 
 There are two parts to this test, first open up terminal and load the listener:
 
-	php listener.php &
+	./load_clients.sh 100
 	
-Listener is set to die after running for 15 minutes, you can adjust this by changing the $how_long_to_live variable at the start of listener.
+This will load 100 instances of listener.php into the background. Don't worry too much about killing these, you have a few options....
+
+First, Listener is set to die after running for 15 minutes, you can adjust this by changing the $how_long_to_live variable at the start of listener.
+
+Second, you can also kill all instances of listener.php by calling this command:
+
+	touch /tmp/nomorelistener
+	
+This will trigger listener to stop listening and kill itself.
+
+Inside listener.php, there is also a variable called $silent, setting this to false will output content to your terminal, you don't want to have this set to false when running listener in background mode as your terminal will get messy quickly.
 
 The idea with this, is you can run listener repeatedly and let it run in the background, gather new posts and store in the database when each has arrived.
 
