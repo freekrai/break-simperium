@@ -16,7 +16,7 @@ if [[ $1 == "" ]]; then
 fi
 
 for ((i=0; i<$span; i++)); do
-	php listener.php &
+	php listener.php --silent=true &
     if [[ $randomwait == "y" ]]; then
         sleep ${RANDOM:0:1};
     fi
