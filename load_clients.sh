@@ -4,7 +4,7 @@ span=$1;
 randomwait=$2;
 
 function help {
-    echo "Usage: ./load_client.sh <number-of-users-to-span> <random-wait>";
+    echo "Usage: ./load_clients.sh <number-of-users-to-span> <random-wait>";
     echo "    number-of-users-to-span: The number of simulated users hitting REST. (0-n where n is an Integer)";
 	echo "    random-wait: y or blank, if y, then we will wait a random number between connections";
     echo "";

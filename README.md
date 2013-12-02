@@ -69,7 +69,7 @@ Now, you want to open a new terminal tab and run the stress test tool...
 
 stress_test.php is a handy tool for stress testing a system, you call it by:
 
-	php stress_test.php url-to-test number-of-clients
+	php stress_test.php --url=url-to-test --clients=number-of-clients
 	
 This will then trigger a test of the url you passed, with a concurrent number of connections specified by number-of-clients
 

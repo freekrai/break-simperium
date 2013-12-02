@@ -9,6 +9,7 @@
 	$simperium = new Simperium($appname,$apikey);
 	$simperium->set_token($token);
 
+	$started = microtime( true );
 
 //	unique UUID to identify this client.
 	$client_id = $simperium->generate_uuid();
@@ -34,9 +35,10 @@
 
 	//	store the message into the log table
 	function update_log($name,$value){
-		global $client_id;
+		global $client_id,$started;
 		$pdo = Db::singleton();
-		$pdo->query( "INSERT INTO log SET log_name='{$name}',log_value='{$value}',log_client='{$client_id}',log_type='p';" );
+		$mt = microtime(true) - $started;
+		$pdo->query( "INSERT INTO log SET log_name='{$name}',log_value='{$value}',log_value2='',log_value3='{$mt}',log_client='{$client_id}',log_type='p';" );
 	}
 
 //	grab random text:

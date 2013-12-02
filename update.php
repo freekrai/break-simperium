@@ -38,7 +38,8 @@
 	function update_log($name,$value){
 		global $client_id;
 		$pdo = Db::singleton();
-		$pdo->query( "INSERT INTO log SET log_name='{$name}',log_value='{$value}',log_client='{$client_id}',log_type='u';" );
+		$mt = microtime( true );
+		$pdo->query( "INSERT INTO log SET log_name='{$name}',log_value='{$value}',log_value2='',log_value3='{$mt}',log_client='{$client_id}',log_type='p';" );
 	}
 
 
