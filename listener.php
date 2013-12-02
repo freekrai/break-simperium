@@ -126,7 +126,7 @@
 		private function update_log($name,$value,$text=''){
 			$pdo = Db::singleton();
 			$mt = $this->microtime() - $this->started;
-			$pdo->query( "INSERT INTO log SET log_name='{$name}',log_value='{$value}',log_value2='{$text}',log_value3='{$mt}',log_client='{$this->client_id}',log_type='l';" );
+			$pdo->query( "INSERT INTO log SET log_name='{$name}',log_value='{$value}',log_value2='{$text}',log_time_elapsed='{$mt}',log_client='{$this->client_id}',log_type='l';" );
 		}
 		
 		private function get_last_cv(){

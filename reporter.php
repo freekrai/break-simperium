@@ -48,17 +48,16 @@
 				foreach($messages as $cv => $message ){
 ?>
 				<tr>
-					<th colspan=3>
-						<h4><?php echo $cv?></h4>
-					</th>
+					<td colspan=4 class="active"><?php echo $cv?></td>
 				</tr>
 <?php
 					$i = 1;
 					foreach( $message as $uuid => $msg ){
 ?>
+				<tr>
 					<td><?php echo $i?></td>
 					<td><?php echo $uuid ?></td>
-					<td><?php echo round($msg['log_value3'],2)?></td>
+					<td><?php echo round($msg['log_time_elapsed'],2)?></td>
 				</tr>
 <?php					
 						$i++;
