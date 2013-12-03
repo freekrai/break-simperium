@@ -11,6 +11,7 @@ class Simperium{
 	private $bucket;
 	private $user;
 	private $token;
+	private $last_code;
 	public function __construct($app_name,$api_key){
 		//	authorize connection
 		$this->app_name = $app_name;
@@ -36,6 +37,10 @@ class Simperium{
 		$this->token = (String) $ret->access_token;
 
 		return $this->token;
+	}
+	
+	public function get_lastcode(){
+		return $this->last_code;
 	}
 	
 	public function get_token(){
@@ -207,8 +212,9 @@ class Simperium{
 		curl_setopt($ch, CURLOPT_POST, 1);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
 		$output = curl_exec($ch);
+		$reponseInfo = curl_getinfo($ch);
 		curl_close($ch);
-
+		$this->last_code = $reponseInfo;
 		return json_decode($output);
 	}
 

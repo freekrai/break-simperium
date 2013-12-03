@@ -2,7 +2,7 @@
 /*
 	Listener Reporter, gather reports based on listener and responses received.
 */
-
+	ini_set('memory_limit', '264M');
 	date_default_timezone_set('America/Los_Angeles');
 	include("system/pdo.class.php");
 	include("config.php");
@@ -31,42 +31,97 @@
 	<body>
 		<br /><br />
 		<div class="container">
+			<ul class="nav nav-tabs nav-justified">
+				<li><a href="reporter.php">Message Summary</a></li>
+				<li><a href="reporter.php?sent=1">Message Posting Summary</a></li>
+			</ul>
+			<br />
+<?php 	if( !isset($_GET['details']) && !isset($_GET['sent']) ){	?>
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h3 class="panel-title">Messages Received</h3>
+					<h3 class="panel-title">Message Summary</h3>
 				</div>
 				<table class="table table-striped table-bordered">
 				<thead>
 				<tr>
+					<th>#</th>
 					<th>Message CV</th>
-					<th>Client</th>
-					<th>Time (In Seconds)</th>
+					<th>Clients</th>
+					<th>Average time to receive</th>
 				</tr>
 				</thead>
 				<tbody>
 <?php
+				$i = 1;
 				foreach($messages as $cv => $message ){
-?>
-				<tr>
-					<td colspan=4 class="active"><?php echo $cv?></td>
-				</tr>
-<?php
-					$i = 1;
+					$clients = count($message);
+					$time = array();
 					foreach( $message as $uuid => $msg ){
-?>
-				<tr>
-					<td><?php echo $i?></td>
-					<td><?php echo $uuid ?></td>
-					<td><?php echo round($msg['log_time_elapsed'],2)?></td>
-				</tr>
-<?php					
-						$i++;
+						$time[] = round($msg['log_time_elapsed'],2);
 					}
+					$avg = avrg( $time );
+?>
+					<tr>
+						<td><?php echo $i?></td>
+						<td><a href="reporter.php?details=<?php echo $cv?>"><?php echo $cv?></a></td>
+						<td><?php echo $clients?></td>
+						<td><?php echo round($avg,2)?></td>
+					</tr>
+<?php
+					$i++;
 				}
 ?>
 				</tbody>
 				</table>
 			</div>
+			<br />
+<?php 	}	?>
+<?php 	if( isset($_GET['details']) ){	?>
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Messages Received</h3>
+				</div>
+					<table class="table table-striped table-bordered">
+					<thead>
+					<tr>
+						<th>Message CV</th>
+						<th>Client</th>
+						<th>Time (In Seconds)</th>
+						<th>Date</th>
+					</tr>
+					</thead>
+					<tbody>
+<?php
+					$cv = $_GET['details'];
+					$message = $messages[ $cv ];
+?>
+					<tr>
+						<td colspan=4 class="active"><?php echo $cv?></td>
+					</tr>
+<?php
+					$i = 1;
+					foreach( $message as $uuid => $msg ){
+?>
+						<tr>
+							<td><?php echo $i?></td>
+							<td><?php echo $uuid ?></td>
+							<td><?php echo round($msg['log_time_elapsed'],2)?></td>
+							<td><?php echo $msg['log_date']?></td>
+						</tr>
+<?php					
+						$i++;
+					}
+?>
+				</tbody>
+				</table>
+			</div>
+<?php 	}	?>
 		</div>
 	</body>
 	</html>
+<?php
+	function avrg( $arr ){
+		$count = count( $arr );
+		return (array_sum($arr) / $count);
+	}
+?>

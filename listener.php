@@ -20,7 +20,7 @@
 
 	$arguments = arguments( $argv );
 
-	$how_long_to_live = 15 * 60;	//	15 minutes
+	$how_long_to_live = 30 * 60;	//	30 minutes
 	$silent = true;
 	
 	if( isset($arguments['silent']) )	$silent = $arguments['silent'];
@@ -39,7 +39,7 @@
 
 
 /*
-	Handy function for CLI-based apps that parse all arguments that start with -- or - and return an array with the key as that argument and the variable
+	Handy function for CLI-based apps that parse all arguments that start with -- or - and return an array with the key as that argument and the variable, if argument is passed with no value, ie: --silient, rather than --silent=0 then it set to true.
 */
 	function arguments($argv) {
 		$_ARG = array();
@@ -95,7 +95,7 @@
 			//	the id where we left off last time we ran it:
 			$cv = $this->get_last_cv();
 
-			if( !$cv )	$cv = '529ccbe6ba5fdc4ed75dae0a';
+			if( !$cv )	$cv = '529e2c37ba5fdc4ed7d8c89d';
 			
 			$numTodos = 0;
 			$a = true;

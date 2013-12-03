@@ -21,7 +21,7 @@
 			$this->simperium->set_token($token);	
 			$this->started = $this->microtime();
 
-			$this->alert('Started at: ' . date('Y-m-d h:i:s') . '. PID: ' . getmypid());
+//			$this->alert('Started at: ' . date('Y-m-d h:i:s') . '. PID: ' . getmypid());
 
 			//	unique UUID to identify this poster.
 			$this->client_id = $this->simperium->generate_uuid();
@@ -45,13 +45,18 @@
 				'timeStamp' => time(),
 				'done'=>'False'
 			) );
-			$this->update_log( "Sending Message",'sent');
+
+			$res = json_encode($this->simperium->get_lastcode());
+
+			$this->update_log( "Sending Message",'sent',$res);
+
+			$this->alert("OK");
 		}
 
-		private function update_log($name,$value){
+		private function update_log($name,$value,$value2=''){
 			$pdo = Db::singleton();
 			$mt = $this->microtime() - $this->started;
-			$pdo->query( "INSERT INTO log SET log_name='{$name}',log_value='{$value}',log_value2='',log_time_elapsed='{$mt}',log_client='{$this->client_id}',log_type='p';" );
+			$pdo->query( "INSERT INTO log SET log_name='{$name}',log_value='{$value}',log_value2='{$value2}',log_time_elapsed='{$mt}',log_client='{$this->client_id}',log_type='p';" );
 		}
 	
 	//	grab random text:
@@ -84,7 +89,7 @@
 		}
 		
 		function __destruct() {
-			$this->alert('Finished at: ' . date('Y-m-d h:i:s') . '. PID: ' . getmypid());
+//			$this->alert('Finished at: ' . date('Y-m-d h:i:s') . '. PID: ' . getmypid());
 			ob_end_clean();
 		}
 	}

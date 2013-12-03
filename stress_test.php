@@ -135,6 +135,7 @@
 			$this->alert( 
 				$this->info[$multiInfo['handle']]['key'] . ' - ' . 
 				$this->info[$multiInfo['handle']]['url'] . ' - ' . 
+				$content.' - '.
 				$this->elapsed( $this->info[$multiInfo['handle']]['time'] ).'s' 
 			);
 		}
