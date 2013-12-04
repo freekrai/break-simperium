@@ -25,8 +25,10 @@ First, it will perform a series of posts, then it will perform a series of queri
 You will get a report along these lines:
 
 	Started at: 2013-12-03 09:03:34. PID: 40342
+	Sending posts to simperium
 	0 - https://api.simperium.com/1/authorities-platforms-ed8/utest2/i/1386133414-0 - post - 200 - 1.17s
 	1 - https://api.simperium.com/1/authorities-platforms-ed8/utest2/i/1386133414-1 - post - 200 - 1.17s
+	Ok, now sending gets to simperium
 	0 - https://api.simperium.com/1/authorities-platforms-ed8/utest2/i/1386133414-0 - get - 200 - 0.58s
 	1 - https://api.simperium.com/1/authorities-platforms-ed8/utest2/i/1386133414-1 - get - 200 - 0.58s
 	status codes returned: 200 = 4
