@@ -5,18 +5,18 @@ Simperium is a simple way for developers to move data as it changes, instantly a
 
 I want to really test Simeperium, so this app is going to be way to test that.
 
-Running simperium_test is pretty simple, from the terminal type:
+Running simperium_test.php is pretty simple, from the terminal type:
 
 	php simperium_test.php --clients=<concurrent-clients-to-test> --token=<simperium-token> --appid=<app-id-to-test> --bucket=<bucket-to-test> --ip=<ip-address-to-test> --hostname=<hostname-to-pass> 	
 
-The arguments are as follow:
+Where the arguments are as follow:
 
-- clients: The number of simulated users hitting REST. (0-n where n is an Integer)
-- bucket: simperium bucket
-- token: simperium token
-- appid: simperium appiid
-- ip: ip address to test (optional)	
-- hostname: hostname in headers (optional)
+- *clients*: The number of simulated users hitting REST. (0-n where n is an Integer)
+- *bucket*: simperium bucket
+- *token*: simperium token
+- *appid*: simperium appiid
+- *ip*: ip address to test (optional)	
+- *hostname*: hostname in headers (optional)
 
 This will perform a series of test posts to simperium to the bucket you've specified, the posts will occur parallel to each other, and will occur in two pieces.
 
