@@ -18,7 +18,6 @@ The arguments are as follow:
 - ip: ip address to test (optional)	
 - hostname: hostname in headers (optional)
 
-
 This will perform a series of test posts to simperium to the bucket you've specified, the posts will occur parallel to each other, and will occur in two pieces.
 
 First, it will perform a series of posts, then it will perform a series of queries to make sure the data exists.
