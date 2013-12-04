@@ -100,10 +100,10 @@
 		
 		public function __construct($concurrent,$url,$appid,$bucket,$token,$hostname=''){
 			$this->slug = time();
-
+			$port = '';
 			$url = parse_url( $url );
-			$url = $url['scheme'].'://'.$url['host'];
-			$port = $url['port'];
+			$url = $url['scheme'].'://'.$url['host'];			
+			if( isset($url['port']) )	$port = $url['port'];
 /*
 			We want to set up our post and get queries.
 			
@@ -161,7 +161,9 @@
 			$this->time = $this->microtime();
 			$this->alert('Started at: ' . date('Y-m-d h:i:s') . '. PID: ' . getmypid());
 
+			$this->alert("Sending posts to simperium");
 			$posts = $this->multiRequest( $this->posts );
+			$this->alert("Ok, now sending gets to simperium");
 			$gets = $this->multiRequest( $this->gets );
 			$result = array_merge((array)$posts, (array)$gets);
 
