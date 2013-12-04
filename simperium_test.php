@@ -16,7 +16,7 @@
 	
 	if( !count($arguments) ){
 	    echo "Usage: php simperium_test.php --clients=<concurrent-clients-to-test> --bucket=<simperium-bucket> --token=<simperium-token> --appid=<app-id-to-test> --ip=<ip-address-to-test> --hostname=<hostname-to-pass>\n";
-	    echo "    clients: The number of simulated users hitting REST. (0-n where n is an Integer)\n";
+	    echo "    clients: The number of concurrent users hitting REST. (0-n where n is an Integer)\n";
 		echo "    bucket: simperium bucket\n";
 		echo "    token: simperium token\n";
 		echo "    appid: simperium app-id\n";

@@ -11,7 +11,7 @@ Running simperium_test.php is pretty simple, from the terminal type:
 
 Where the arguments are as follow:
 
-- *clients*: The number of simulated users hitting REST. (0-n where n is an Integer)
+- *clients*: The number of concurrent users hitting the API. (0-n where n is an Integer)
 - *bucket*: simperium bucket
 - *token*: simperium token
 - *appid*: simperium appiid
