@@ -1,12 +1,11 @@
 #!/usr/bin/php
 <?php
 /*
-	Multi-channel load tester.
+	Parallel load tester.
 	
 	Call by:
 	
-	php stress_test.php --url=<url-to-test> --clients=<number-of-clients>
-	
+	php stress_test.php --url=<url-to-test> --clients=<number-of-clients>	
 */
 	date_default_timezone_set('America/Los_Angeles');
 	$sites = array();
@@ -32,17 +31,17 @@
 	/*
 		Handy function for CLI-based apps that parse all arguments that start with -- or - and return an array with the key as that argument and the variable
 	*/
-		function arguments($argv) {
-			$_ARG = array();
-			foreach ($argv as $arg) {
-				if (ereg('--([^=]+)=(.*)',$arg,$reg)) {
-					$_ARG[$reg[1]] = $reg[2];
-				} elseif(ereg('-([a-zA-Z0-9])',$arg,$reg)) {
-					$_ARG[$reg[1]] = 'true';
-				}
+	function arguments($argv) {
+		$_ARG = array();
+		foreach ($argv as $arg) {
+			if (ereg('--([^=]+)=(.*)',$arg,$reg)) {
+				$_ARG[$reg[1]] = $reg[2];
+			} elseif(ereg('-([a-zA-Z0-9])',$arg,$reg)) {
+				$_ARG[$reg[1]] = 'true';
 			}
-			return $_ARG;
 		}
+		return $_ARG;
+	}
 	
 	
 	$mc = new Stress_Test($sites, $concurrent);
@@ -87,6 +86,10 @@
 		
 		public function process(){
 			$running = 0;
+			if( function_exists('curl_multi_setopt') ){
+				curl_multi_setopt( $this->multiHandle, CURLMOPT_PIPELINING, 0);
+				curl_multi_setopt( $this->multiHandle, CURLMOPT_MAXCONNECTS, 20);
+			}
 			do {
 				$this->_addHandles( min(array($this->maxConcurrent - $running, $this->_moreToDo())) );
 				while ($exec = curl_multi_exec($this->multiHandle, $running) === -1) {

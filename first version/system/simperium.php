@@ -121,7 +121,7 @@ class Simperium{
 			'X-Simperium-Token: '.$this->token
 		);
 		$url = $this->api_url.'/1/'.$this->app_name.'/'.$this->bucket.'/i/'.$uuid;
-		if( $version == '' ){
+		if( $version != '' ){
 			$url .= '/v/'.$version;
 		}
 		$ret = $this->_get($url,array(),$headers);
