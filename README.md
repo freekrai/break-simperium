@@ -5,9 +5,9 @@ Simperium is a simple way for developers to move data as it changes, instantly a
 
 I want to really test Simeperium, so this app is going to be way to test that.
 
-Running simperium_test.php is pretty simple, from the terminal type:
+Running simperium-test.php is pretty simple, from the terminal type:
 
-	php simperium_test.php --clients=<concurrent-clients-to-test> --token=<simperium-token> --appid=<app-id-to-test> --bucket=<bucket-to-test> --ip=<ip-address-to-test> --hostname=<hostname-to-pass> 	
+	php simperium-test.php --clients=<concurrent-clients-to-test> --token=<simperium-token> --appid=<app-id-to-test> --bucket=<bucket-to-test> --ip=<ip-address-to-test> --hostname=<hostname-to-pass> --port=<port to connect to>
 
 Where the arguments are as follow:
 
@@ -17,6 +17,7 @@ Where the arguments are as follow:
 - *appid*: simperium appiid
 - *ip*: ip address to test (optional)	
 - *hostname*: hostname in headers (optional)
+- *port*: port to use (optional)
 
 This will perform a series of test posts to simperium to the bucket you've specified, the posts will occur parallel to each other, and will occur in two pieces.
 
@@ -24,17 +25,32 @@ First, it will perform a series of posts, then it will perform a series of queri
 
 You will get a report along these lines:
 
-	Started at: 2013-12-03 09:03:34. PID: 40342
+	Started at: 2013-12-04 01:39:32. PID: 45713
 	Sending posts to simperium
-	0 - https://api.simperium.com/1/authorities-platforms-ed8/utest2/i/1386133414-0 - post - 200 - 1.17s
-	1 - https://api.simperium.com/1/authorities-platforms-ed8/utest2/i/1386133414-1 - post - 200 - 1.17s
+	0 - https://api.simperium.com/1/authorities-platforms-ed8/utest2/i/1386193172-0 - post - 200 - 0.64s
+	1 - https://api.simperium.com/1/authorities-platforms-ed8/utest2/i/1386193172-1 - post - 200 - 0.64s
+	------------------
+	responses: 2
+	status code 200: 2
+	------------------
+	min response time: 0.64s
+	max response time: 0.64s
+	median response time: 0.64s
+	mean response time: 0.64s
+	------------------
+	
 	Ok, now sending gets to simperium
-	0 - https://api.simperium.com/1/authorities-platforms-ed8/utest2/i/1386133414-0 - get - 200 - 0.58s
-	1 - https://api.simperium.com/1/authorities-platforms-ed8/utest2/i/1386133414-1 - get - 200 - 0.58s
-	status codes returned: 200 = 4
-	min response time: 0.58s, max response time: 1.17s, median response time: 1.17s, mean response time: 0.875s
-	average response time: 0.88s, average response / min: 137.4, responses: 4, elapsed: 1.75s
-	Finished at: 2013-12-03 09:03:36. PID: 40342
+	0 - https://api.simperium.com/1/authorities-platforms-ed8/utest2/i/1386193172-0 - get - 200 - 0.8s
+	1 - https://api.simperium.com/1/authorities-platforms-ed8/utest2/i/1386193172-1 - get - 200 - 0.8s
+	------------------
+	responses: 2
+	status code 200: 2
+	------------------
+	min response time: 0.8s
+	max response time: 0.8s
+	median response time: 0.8s
+	mean response time: 0.8s
+
 	
 Displayed on the screen after it runs.
 
@@ -43,3 +59,5 @@ When you run this test, you'll see each query url showing twice, that is because
 For this purpose, you'll see a key beside each url, and whether it is a post or a get, followed by the response code, and how long it took to complete.
 
 This way, we also know that the post, and the get worked. 
+
+If you pass -q or --q then you will only see a summary, and not the status of each query.
