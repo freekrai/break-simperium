@@ -1,8 +1,3 @@
-// An example Backbone application contributed by
-// [Jérôme Gravel-Niquet](http://jgn.me/). This demo uses a simple
-// [LocalStorage adapter](backbone-localstorage.html)
-// to persist Backbone models within your browser.
-
 function generateUUID() {
     var d = new Date().getTime();
     var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -20,7 +15,7 @@ $(function(){
 		simperium = new Simperium( app_id, {
 		token: '59a9eff00c80457686aece62a0047e2c'
 	} );
-	todoBucket = simperium.bucket( 'liveblog' );
+	todoBucket = simperium.bucket( 'utest2' );
 	
 	// Todo Model
 	// ----------
