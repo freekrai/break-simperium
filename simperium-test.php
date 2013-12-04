@@ -201,8 +201,6 @@ class Simperium_Test{
 		$msg = '';
 		$msg .= "------------------\n";
 		$msg .= "responses: " . count($times) . "\n";
-#		$msg .= "total elapsed time: " . $this->elapsed() . "s\n";
-#		$msg .= "------------------\n";
 
 		$line = array();
 		foreach( $this->results['post']['status'] as $code=>$cnt ){
@@ -215,8 +213,6 @@ class Simperium_Test{
 		$msg .= "max response time: " . max($times) . "s\n";
 		$msg .= "median response time: " . $this->get_median($times) . "s\n";
 		$msg .= "mean response time: " . $this->get_mean($times) . "s\n";
-#		$msg .= "average response time: " . $this->get_mean($times) . "s\n";
-#		$msg .= "average response / min: " . round( count($times) / $this->elapsed(), 2) * 60 . "\n";
 		$msg .= "------------------\n";
 		$this->alert($msg);
 
@@ -227,8 +223,6 @@ class Simperium_Test{
 		$msg = '';
 		$msg .= "------------------\n";
 		$msg .= "responses: " . count($times) . "\n";
-#		$msg .= "total elapsed time: " . $this->elapsed() . "s\n";
-#		$msg .= "------------------\n";
 
 		$line = array();
 		foreach( $this->results['get']['status'] as $code=>$cnt ){
@@ -241,8 +235,6 @@ class Simperium_Test{
 		$msg .= "max response time: " . max($times) . "s\n";
 		$msg .= "median response time: " . $this->get_median($times) . "s\n";
 		$msg .= "mean response time: " . $this->get_mean($times) . "s\n";
-#		$msg .= "average response time: " . $this->get_mean($times) . "s\n";
-#		$msg .= "average response / min: " . round( count($times) / $this->elapsed(), 2) * 60 . "\n";
 		$this->alert($msg);
 		$this->alert('Finished at: ' . date('Y-m-d h:i:s') . '. PID: ' . getmypid());
 		exit;
@@ -327,15 +319,17 @@ class Simperium_Test{
 		
 		//	We've finished running, now let's get some info together.
 		foreach($curly as $id => $c) {
-			$this->responded_clients_time += $this->elapsed( $this->info[$id]['time'] );
-			$this->responded_clients++;
 
 			//	Let's set some more info to the $info variable, we will set the headers, status code, and content, as well as the end time.
 			$this->info[$id]['headers'] = curl_getinfo($c);
 			$this->info[$id]['status'] = $this->info[$id]['headers']['http_code'];
 			$this->info[$id]['content'] = curl_multi_getcontent($c);
 			//	get the end time, which is the elapsed time from when the post began and now..
-			$this->info[$id]['endtime'] = $this->elapsed( $this->info[$id]['time'] );
+			$this->info[$id]['endtime'] = round($this->info[$id]['headers']['total_time'],2);
+
+			$this->responded_clients_time += $this->info[$id]['endtime'];
+			$this->responded_clients++;
+
 
 			//	remove this query from the curl multi handle.
 			curl_multi_remove_handle($mh, $c);
