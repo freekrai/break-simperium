@@ -100,6 +100,10 @@
 		
 		public function __construct($concurrent,$url,$appid,$bucket,$token,$hostname=''){
 			$this->slug = time();
+
+			$url = parse_url( $url );
+			$url = $url['scheme'].'://'.$url['host'];
+			$port = $url['port'];
 /*
 			We want to set up our post and get queries.
 			
@@ -110,9 +114,6 @@
 			
 			We then add the same url to the gets function so we can make sure the new post we added to our bucket exists.
 */
-
-			$url = parse_url( $url );
-			$url = $url['scheme'].'://'.$url['host'];
 
 			for ($i = 0; $i < $concurrent; $i++) {
 				$this->posts[] = array(
@@ -129,10 +130,10 @@
 			}
 			$this->token = $token;
 			$this->hostname = $hostname;
-			$this->allToDo = $todo;
 			$this->maxConcurrent = $concurrent;
 			$this->time = $this->microtime();
 		}
+		
 		private function elapsed($time = 0) {
 			if (empty($time)) $time = $this->time;
 			$diff = $this->microtime() - $time;
