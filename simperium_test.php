@@ -7,6 +7,7 @@
 	
 	php simperium_test.php --clients=<concurrent-clients-to-test> --token=<simperium-token> --appid=<app-id-to-test> --bucket=<bucket-to-test> --ip=<ip-address-to-test> --hostname=<hostname-to-pass> 	
 */
+
 	date_default_timezone_set('America/Los_Angeles');
 	$sites = array();
 	$concurrent = 2;   // Any number.
@@ -109,15 +110,21 @@
 			
 			We then add the same url to the gets function so we can make sure the new post we added to our bucket exists.
 */
+
+			$url = parse_url( $url );
+			$url = $url['scheme'].'://'.$url['host'];
+
 			for ($i = 0; $i < $concurrent; $i++) {
 				$this->posts[] = array(
 					'url'=> $url.'/1/'.$appid.'/'.$bucket.'/i/'.$this->slug.'-'.$i,
+					'port' => $port,
 					'post'=> array(
 						'text'=>get_random_text()
 					)
 				);
 				$this->gets[] = array(
-					'url'=> $url.'/1/'.$appid.'/'.$bucket.'/i/'.$this->slug.'-'.$i
+					'url'=> $url.'/1/'.$appid.'/'.$bucket.'/i/'.$this->slug.'-'.$i,
+					'port' => $port,					
 				);
 			}
 			$this->token = $token;
@@ -198,7 +205,10 @@
 				curl_setopt($curly[$id], CURLOPT_RETURNTRANSFER, 1);
 				$method = 'get';
 				if (is_array($d)) {
-					if (!empty($d['post'])) {
+					if (!empty($d['port']) ){
+						curl_setopt($curly[$id],CURLOPT_PORT, $d['port']);
+					}
+					if (!empty($d['post']) ) {
 						$method = 'post';
 						curl_setopt($curly[$id], CURLOPT_POST,       1);
 						curl_setopt($curly[$id], CURLOPT_POSTFIELDS, json_encode($d['post']) );
