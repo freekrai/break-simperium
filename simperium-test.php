@@ -324,12 +324,11 @@ class Simperium_Test{
 			$this->info[$id]['headers'] = curl_getinfo($c);
 			$this->info[$id]['status'] = $this->info[$id]['headers']['http_code'];
 			$this->info[$id]['content'] = curl_multi_getcontent($c);
-			//	get the end time, which is the elapsed time from when the post began and now..
+			//	get the end time, which is the total time curl has returned that the query took..
 			$this->info[$id]['endtime'] = round($this->info[$id]['headers']['total_time'],2);
 
 			$this->responded_clients_time += $this->info[$id]['endtime'];
 			$this->responded_clients++;
-
 
 			//	remove this query from the curl multi handle.
 			curl_multi_remove_handle($mh, $c);
