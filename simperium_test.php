@@ -150,7 +150,13 @@
 			ob_flush();
 			flush();
 		}
-
+		/*
+			process
+			
+			-	The brains of the class, process takes the posts and gets variables and performs the curl requests on them, it then
+				builds a report showing stats based on the returned results.
+		
+		*/
 		public function process(){
 			$this->time = $this->microtime();
 			$this->alert('Started at: ' . date('Y-m-d h:i:s') . '. PID: ' . getmypid());
