@@ -162,10 +162,9 @@
 			$this->alert('Started at: ' . date('Y-m-d h:i:s') . '. PID: ' . getmypid());
 
 			$this->alert("Sending posts to simperium");
-			$posts = $this->multiRequest( $this->posts );
+			$this->multiRequest( $this->posts );
 			$this->alert("Ok, now sending gets to simperium");
-			$gets = $this->multiRequest( $this->gets );
-			$result = array_merge((array)$posts, (array)$gets);
+			$this->multiRequest( $this->gets );
 
 			$msg = '';
 			$line = array();
@@ -260,7 +259,6 @@
 				$this->results['status'][ $this->info[$id]['status'] ]++;
 			}
 			curl_multi_close($mh);
-			return $this->info;
 		}
 
 		private function mean_median_range($array, $output = 'mean'){
