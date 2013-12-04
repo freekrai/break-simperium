@@ -25,11 +25,20 @@ First, it will perform a series of posts, then it will perform a series of queri
 
 You will get a report along these lines:
 
-	Started at: 2013-12-03 03:56:06. PID: 39874
-	0 - https://api.simperium.com/1/authorities-platforms-ed8/utest2/i/1386114966-0 - post - 200 - 2.73s
-	1 - https://api.simperium.com/1/authorities-platforms-ed8/utest2/i/1386114966-1 - post - 200 - 2.73s
-	0 - https://api.simperium.com/1/authorities-platforms-ed8/utest2/i/1386114966-0 - get - 200 - 0.99s
-	1 - https://api.simperium.com/1/authorities-platforms-ed8/utest2/i/1386114966-1 - get - 200 - 0.99s
-	avg rsp time: 1.86s, avg rsp/min: 64.8, responses: 4, elapsed: 3.72s
+	Started at: 2013-12-03 09:03:34. PID: 40342
+	0 - https://api.simperium.com/1/authorities-platforms-ed8/utest2/i/1386133414-0 - post - 200 - 1.17s
+	1 - https://api.simperium.com/1/authorities-platforms-ed8/utest2/i/1386133414-1 - post - 200 - 1.17s
+	0 - https://api.simperium.com/1/authorities-platforms-ed8/utest2/i/1386133414-0 - get - 200 - 0.58s
+	1 - https://api.simperium.com/1/authorities-platforms-ed8/utest2/i/1386133414-1 - get - 200 - 0.58s
+	status codes returned: 200 = 4
+	min response time: 0.58s, max response time: 1.17s, median response time: 1.17s, mean response time: 0.875s
+	average response time: 0.88s, average response / min: 137.4, responses: 4, elapsed: 1.75s
+	Finished at: 2013-12-03 09:03:36. PID: 40342
 	
-Displayed on the screen when it shows up.
+Displayed on the screen after it runs.
+
+When you run this test, you'll see each query url showing twice, that is because we do two tests: We first post the data to simperium, and then we perform a get to return that new post.
+
+For this purpose, you'll see a key beside each url, and whether it is a post or a get, followed by the response code, and how long it took to complete.
+
+This way, we also know that the post, and the get worked. 

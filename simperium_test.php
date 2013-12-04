@@ -95,10 +95,20 @@
 		private $urls = array();
 		private $posts = array();
 		private $gets = array();
+		private $results = array();
 		
 		public function __construct($concurrent,$url,$appid,$bucket,$token,$hostname=''){
 			$this->slug = time();
-			$todo = array();
+/*
+			We want to set up our post and get queries.
+			
+			First, we loop through the number of concurrent connections we are setting up, and add  a url that is the same for both
+			post and get. 
+			
+			In the post, we also create a unique post variable containing random text.
+			
+			We then add the same url to the gets function so we can make sure the new post we added to our bucket exists.
+*/
 			for ($i = 0; $i < $concurrent; $i++) {
 				$this->posts[] = array(
 					'url'=> $url.'/1/'.$appid.'/'.$bucket.'/i/'.$this->slug.'-'.$i,
@@ -139,13 +149,29 @@
 
 			$posts = $this->multiRequest( $this->posts );
 			$gets = $this->multiRequest( $this->gets );
+			$result = array_merge((array)$posts, (array)$gets);
 
 			$msg = '';
-			$msg .= "avg rsp time: " . round($this->responded_clients_time / $this->responded_clients, 2) . "s, ";
-			$msg .= "avg rsp/min: " . round($this->responded_clients / $this->elapsed(), 2) * 60 . ", ";
+			$line = array();
+			foreach( $this->results['status'] as $code=>$cnt ){
+				$line[] = $code." = ".$cnt;
+			}
+			$msg .= 'status codes returned: '.implode(",",$line)."\n";
+
+			$times = $this->results['times'];
+
+			$msg .= "min response time: " . min($times) . "s, ";
+			$msg .= "max response time: " . max($times) . "s, ";
+			$msg .= "median response time: " . $this->mean_median_range($times, 'median') . "s, ";
+			$msg .= "mean response time: " . $this->mean_median_range($times,'mean') . "s\n";
+						
+			$msg .= "average response time: " . round($this->responded_clients_time / $this->responded_clients, 2) . "s, ";
+			$msg .= "average response / min: " . round($this->responded_clients / $this->elapsed(), 2) * 60 . ", ";
 			$msg .= "responses: " . $this->responded_clients . ", ";
 			$msg .= "elapsed: " . $this->elapsed() . "s";
 			$this->alert($msg);
+			$this->alert('Finished at: ' . date('Y-m-d h:i:s') . '. PID: ' . getmypid());
+			exit;
 		}
 
 		private function multiRequest($data, $options = array()) {
@@ -154,9 +180,10 @@
 			$mh = curl_multi_init();
 			if( function_exists('curl_multi_setopt') ){
 				curl_multi_setopt( $mh, CURLMOPT_PIPELINING, 0);
-				curl_multi_setopt( $mh, CURLMOPT_MAXCONNECTS, 20);
+				curl_multi_setopt( $mh, CURLMOPT_MAXCONNECTS, 100);
 			}
 			$i = 0;
+
 			foreach ($data as $id => $d) {
 				$curly[$id] = curl_init();
 				$headers = array();
@@ -187,30 +214,74 @@
 				$this->info[$id]['method'] = $method;
 				$i++;
 			}
+			
 			$running = null;
 			do {
 				curl_multi_exec($mh, $running);
 			} while($running > 0);
+			
 			foreach($curly as $id => $c) {
 				$this->responded_clients_time += $this->elapsed( $this->info[$id]['time'] );
 				$this->responded_clients++;
 
 				$this->info[$id]['headers'] = curl_getinfo($c);
+				$this->info[$id]['status'] = $this->info[$id]['headers']['http_code'];
 				$this->info[$id]['content'] = curl_multi_getcontent($c);
 				curl_multi_remove_handle($mh, $c);
-
+				$end = $this->elapsed( $this->info[$id]['time'] );
 				$this->alert( 
 					$this->info[$id]['key'] . ' - ' . 
 					$this->info[$id]['url'] . ' - ' . 
 					$this->info[$id]['method'] . ' - ' . 
-					$this->info[$id]['headers']['http_code'] .' - '. 
-					$this->elapsed( $this->info[$id]['time'] ).'s' 
+					$this->info[$id]['status'] .' - '. 
+					$end.'s' 
 				);
+				$this->results['times'][] = $end;
+				$this->results['methods'][ $this->info[$id]['method'] ][ $this->info[$id]['status'] ]++;
+				$this->results['status'][ $this->info[$id]['status'] ]++;
 			}
 			curl_multi_close($mh);
 			return $this->info;
 		}
-		function __destruct() {
+
+		private function mean_median_range($array, $output = 'mean'){
+			if(!is_array($array)){ 
+				return FALSE; 
+			}else{ 
+				switch($output){ 
+					case 'mean': 
+						$count = count($array); 
+						$sum = array_sum($array); 
+						$total = $sum / $count; 
+						break; 
+					case 'median': 
+						rsort($array); 
+						$middle = round(count($array) / 2); 
+						$total = $array[$middle-1]; 
+						break; 
+					case 'mode': 
+						$v = array_count_values($array); 
+						arsort($v); 
+						foreach($v as $k => $v){$total = $k; break;} 
+						break; 
+					case 'range': 
+						sort($array); 
+						$sml = $array[0]; 
+						rsort($array); 
+						$lrg = $array[0]; 
+						$total = $lrg - $sml; 
+						break; 
+				} 
+				return $total; 
+			} 
+		} 
+
+		private function average( $arr ){
+			$count = count( $arr );
+			return (array_sum($arr) / $count);
+		}
+
+		public function __destruct() {
 			ob_end_clean();
 		}
 	}
