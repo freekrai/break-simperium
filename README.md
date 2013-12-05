@@ -79,7 +79,7 @@ Running simperium-users-test.php is pretty simple, from the terminal type:
 Where the arguments are as follow:
 
 - *clients*: The number of concurrent users hitting the API. (0-n where n is an Integer)
-- *apikey*: simperium apik-key
+- *apikey*: simperium api-key
 - *token*: simperium token
 - *appid*: simperium app id
 - *hostname*: hostname in headers (optional)
