@@ -61,3 +61,13 @@ For this purpose, you'll see a key beside each url, and whether it is a post or 
 This way, we also know that the post, and the get worked. 
 
 If you pass -q or --q then you will only see a summary, and not the status of each query.
+
+## Testing Users
+
+A second test suite is simperium-users-test.php, which will test the Simperium authorization API, this will work by following the following steps:
+
+-	Create a user
+-	Authorize the user
+-	Update the user's password
+-	Delete the user
+

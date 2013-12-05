@@ -1,27 +1,27 @@
 #!/usr/bin/php
 <?php
 /**
- * simperium-test.php
+ * simperium-users-test.php
  *
- * Parallel load tester to test Simperium responses and requests.
+ * Parallel load tester to test Simperium users.
  *
  * Call by:
  * 	
- * php simperium-test.php --clients=<concurrent-clients-to-test> --token=<simperium-token> --appid=<app-id-to-test> --bucket=<bucket-to-test> --ip=<ip-address-to-test> --hostname=<hostname-to-pass> 	
+ * php simperium-users-test.php --clients=<concurrent-clients-to-test> --token=<simperium-token> --appid=<app-id-to-test> --bucket=<bucket-to-test> --ip=<ip-address-to-test> --hostname=<hostname-to-pass> 	
 */
 date_default_timezone_set('America/Los_Angeles');
 
 /**
-* Simperium_Test.
+* Simperium_User_Test.
 *
-* Simperium_Test performs a set number of tests against the Simperium API, based on the value of $concurrent.
-* It will first perform a set of posts to simperium, then it will perform a series of gets to simperium based on the 
-* posts.
+* Simperium_User_Test performs a set number of tests against the Simperium authorization API, based on the value of $concurrent.
+* It will first add a set of users to simperium, then it will perform a series of tests to simperium based on the 
+* users it added.
 * 
 * We will then return a report describing the results of the tests, and if any failures occurred.
 *
 */
-class Simperium_Test{
+class Simperium_User_Test{
 	private $slug;
 	private $responded_clients = 0;
 	private $responded_clients_time = 0;
@@ -68,7 +68,7 @@ class Simperium_Test{
 		}
 		
 		//	set default values...
-		$url = 'https://api.simperium.com';
+		$url = 'https://auth.simperium.com';
 		$hostname = '';
 		$token = '';
 		$appid = '';
@@ -300,14 +300,13 @@ class Simperium_Test{
 			}
 
 			//	add the results to our $results variable containing the end time, and the status
-			if( !isset($this->results[ $this->info[$id]['method'] ]) ){
-				$this->results[ $this->info[$id]['method'] ] = array();
+			if( !isset($this->results[ $this->info[$id]['method'] ]['times']) ){
 				$this->results[ $this->info[$id]['method'] ]['times'] = array();
 				$this->results[ $this->info[$id]['method'] ]['methods'] = array();
 				$this->results[ $this->info[$id]['method'] ]['status'] = array();
 				$this->results[ $this->info[$id]['method'] ]['methods'][ $this->info[$id]['method'] ][ $this->info[$id]['status'] ] = 0;
 				$this->results[ $this->info[$id]['method'] ]['status'][ $this->info[$id]['status'] ] = 0;
-			}			
+			}
 			$this->results[ $this->info[$id]['method'] ]['times'][] = $this->info[$id]['endtime'];
 			$this->results[ $this->info[$id]['method'] ]['methods'][ $this->info[$id]['method'] ][ $this->info[$id]['status'] ]++;
 			$this->results[ $this->info[$id]['method'] ]['status'][ $this->info[$id]['status'] ]++;
@@ -473,5 +472,5 @@ class Simperium_Test{
 	}
 }
 
-//	Load our Simperium_Test class and call process to begin the testing...
-new Simperium_Test();
+//	Load our Simperium_User_Test class and call process to begin the testing...
+new Simperium_User_Test();
