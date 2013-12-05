@@ -11,10 +11,6 @@
 */
 date_default_timezone_set('America/Los_Angeles');
 
-//	Load our Simperium_Test class and call process to begin the testing...
-$mc = new Simperium_Test();
-$mc->process();
-
 /**
 * Simperium_Test.
 *
@@ -130,51 +126,15 @@ class Simperium_Test{
 				'port' => $port,					
 			);
 		}
+
 		//	populate the values we set from the command-line:
 		$this->silent = $silent;
 		$this->token = $token;
 		$this->hostname = $hostname;
 		$this->time = $this->microtime();
-	}
 
-	/**
-	* elapsed.
-	*
-	* Returns the time elapsed in seconds between two microtimes.
-	*
-	* @param  	float  	$time 	The time to compare it to, if it is 0, then we use the $time variable we initialized in the constructor.
-	*
-	* @return	float	$diff	Difference in seconds between $time and current microtime
-	*/
-	private function elapsed($time = 0) {
-		if (empty($time)) $time = $this->time;
-		$diff = $this->microtime() - $time;
-		$diff = round($diff,2);
-		return $diff;
-	}
-
-	/**
-	* microtime.
-	*
-	* Returns the current microtime.
-	*
-	* @return	float		$microtime	The current microtime.
-	*/
-	private function microtime() {
-		return microtime(true);
-	}
-
-	/**
-	* alert.
-	*
-	* Outputs the given message to the screen.
-	*
-	* @param	string		$msg		The message to output to the screen.
-	*/
-	private function alert($msg) {
-		echo $msg . (!empty($_SERVER['HTTP_USER_AGENT']) ? "<br />" : "\n");
-		ob_flush();
-		flush();
+		//	start the testing...
+		$this->process();
 	}
 
 	/**
@@ -184,7 +144,7 @@ class Simperium_Test{
 	* builds a report showing stats based on the returned results.
 	*
 	*/
-	public function process(){
+	private function process(){
 		$this->time = $this->microtime();
 		$this->alert('Started at: ' . date('Y-m-d h:i:s') . '. PID: ' . getmypid());
 
@@ -347,6 +307,47 @@ class Simperium_Test{
 		curl_multi_close($mh);
 	}
 
+
+	/**
+	* elapsed.
+	*
+	* Returns the time elapsed in seconds between two microtimes.
+	*
+	* @param  	float  	$time 	The time to compare it to, if it is 0, then we use the $time variable we initialized in the constructor.
+	*
+	* @return	float	$diff	Difference in seconds between $time and current microtime
+	*/
+	private function elapsed($time = 0) {
+		if (empty($time)) $time = $this->time;
+		$diff = $this->microtime() - $time;
+		$diff = round($diff,2);
+		return $diff;
+	}
+
+	/**
+	* microtime.
+	*
+	* Returns the current microtime.
+	*
+	* @return	float		$microtime	The current microtime.
+	*/
+	private function microtime() {
+		return microtime(true);
+	}
+
+	/**
+	* alert.
+	*
+	* Outputs the given message to the screen.
+	*
+	* @param	string		$msg		The message to output to the screen.
+	*/
+	private function alert($msg) {
+		echo $msg . (!empty($_SERVER['HTTP_USER_AGENT']) ? "<br />" : "\n");
+		ob_flush();
+		flush();
+	}
+
 	/**
 	* get_mode.
 	*
@@ -476,3 +477,6 @@ class Simperium_Test{
 		ob_end_clean();
 	}
 }
+
+//	Load our Simperium_Test class and call process to begin the testing...
+new Simperium_Test();
