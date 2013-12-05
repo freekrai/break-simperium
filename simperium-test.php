@@ -117,7 +117,6 @@ class Simperium_Test{
 		
 		We then add the same url to the gets function so we can make sure the new post we added to our bucket exists.
 */
-
 		for ($i = 0; $i < $concurrent; $i++) {
 			$this->posts[] = array(
 				'url'=> $url.'/1/'.$appid.'/'.$bucket.'/i/'.$this->slug.'-'.$i,
@@ -131,6 +130,7 @@ class Simperium_Test{
 				'port' => $port,					
 			);
 		}
+		//	populate the values we set from the command-line:
 		$this->silent = $silent;
 		$this->token = $token;
 		$this->hostname = $hostname;
@@ -143,6 +143,7 @@ class Simperium_Test{
 	* Returns the time elapsed in seconds between two microtimes.
 	*
 	* @param  	float  	$time 	The time to compare it to, if it is 0, then we use the $time variable we initialized in the constructor.
+	*
 	* @return	float	$diff	Difference in seconds between $time and current microtime
 	*/
 	private function elapsed($time = 0) {
@@ -241,6 +242,7 @@ class Simperium_Test{
 	* query we performed.
 	* 
 	* @see		process
+	*
 	* @param 	array	$urls{
 	*			An array of urls to connect to
 	*			@type	int		$id		
@@ -352,6 +354,7 @@ class Simperium_Test{
 	* above, mode can also be defined as the element with the largest frequency in a given data set.
 	* 
 	* @see		process
+	*
 	* @param 	array	$array{
 	*			An array of numbers to find the mode of
 	* )
@@ -370,6 +373,7 @@ class Simperium_Test{
 	* The range is defined as the difference between the highest and lowest number in a given data set.
 	* 
 	* @see		process
+	*
 	* @param 	array	$array{
 	*			An array of numbers to find the range of
 	* )
@@ -389,6 +393,7 @@ class Simperium_Test{
 	* The median is defined as the number in the middle of a given set of numbers arranged in order of increasing magnitude. 
 	* 
 	* @see		process
+	*
 	* @param 	array	$array{
 	*			An array of numbers to find the median of
 	* )
@@ -406,6 +411,7 @@ class Simperium_Test{
 	* Return the average of the numbers passed to it.
 	* 
 	* @see		process
+	*
 	* @param 	array	$array{
 	*			An array of numbers to find the mean of
 	* )
@@ -425,6 +431,7 @@ class Simperium_Test{
 	* @see		Constructor
 	*
 	* @param 	array	$argv	arguments passed from command line.
+	*
 	* @return	array	$_ARG	array of arguments where the key is the argument we passed, and the value is the value of said argument.
 	*							If not value was set (for example -q), then set set the value of the key to true.
 	* 
