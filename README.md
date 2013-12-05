@@ -7,14 +7,14 @@ I want to really test Simeperium, so this app is going to be way to test that.
 
 Running simperium-test.php is pretty simple, from the terminal type:
 
-	php simperium-test.php --clients=<concurrent-clients-to-test> --token=<simperium-token> --appid=<app-id-to-test> --bucket=<bucket-to-test> --ip=<ip-address-to-test> --hostname=<hostname-to-pass> --port=<port to connect to>
+	php simperium-test.php --clients=<concurrent-clients-to-test> --token=<simperium-token> --appid=<app-id-to-test> --bucket=<bucket-to-test> --ip=<ip-address-to-test> --hostname=<hostname-to-pass> --port=<port-to-connect-to> -q
 
 Where the arguments are as follow:
 
 - *clients*: The number of concurrent users hitting the API. (0-n where n is an Integer)
 - *bucket*: simperium bucket
 - *token*: simperium token
-- *appid*: simperium appiid
+- *appid*: simperium app id
 - *ip*: ip address to test (optional)	
 - *hostname*: hostname in headers (optional)
 - *port*: port to use (optional)
@@ -51,7 +51,6 @@ You will get a report along these lines:
 	median response time: 0.8s
 	mean response time: 0.8s
 
-	
 Displayed on the screen after it runs.
 
 When you run this test, you'll see each query url showing twice, that is because we do two tests: We first post the data to simperium, and then we perform a get to return that new post.
@@ -64,10 +63,26 @@ If you pass -q or --q then you will only see a summary, and not the status of ea
 
 ## Testing Users
 
-A second test suite is simperium-users-test.php, which will test the Simperium authorization API, this will work by following the following steps:
+A second test tool is simperium-users-test.php, which will test the Simperium Authentication API, this will work by following the following steps:
 
 -	Create a user
--	Authorize the user
+-	Authorize the user to verify it works
 -	Update the user's password
 -	Delete the user
 
+We will test this with as many users as specified by the --clients argument.
+
+Running simperium-users-test.php is pretty simple, from the terminal type:
+
+	php simperium-users-test.php --clients=<concurrent-clients-to-test> --appid=<app-id-to-test> --apikey=<api-key-to-test> --ip=<ip-address-to-test> --hostname=<hostname-to-pass> --port=<port-to-connect-to> -q
+	
+Where the arguments are as follow:
+
+- *clients*: The number of concurrent users hitting the API. (0-n where n is an Integer)
+- *apikey*: simperium apik-key
+- *token*: simperium token
+- *appid*: simperium app id
+- *hostname*: hostname in headers (optional)
+- *port*: port to use (optional)
+
+The report generated will appear similar to the simperium-test.php report.

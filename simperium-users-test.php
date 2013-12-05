@@ -3,11 +3,11 @@
 /**
  * simperium-users-test.php
  *
- * Parallel load tester to test Simperium users.
+ * Parallel load tester to test the Simperium Authentication API.
  *
  * Call by:
  * 	
- * php simperium-users-test.php --clients=<concurrent-clients-to-test> --token=<simperium-token> --appid=<app-id-to-test> --bucket=<bucket-to-test> --ip=<ip-address-to-test> --hostname=<hostname-to-pass> 	
+ * php simperium-users-test.php --clients=<concurrent-clients-to-test> --appid=<app-id-to-test> --apikey=<api-key-to-test> --ip=<ip-address-to-test> --hostname=<hostname-to-pass> -q
 */
 date_default_timezone_set('America/Los_Angeles');
 
@@ -27,15 +27,15 @@ class Simperium_User_Test{
 	private $responded_clients_time = 0;
 	private $time = 0;
 	private $hostname = '';
-	private $token;
-	private $bucket;
+	private $appid;
+	private $apikey;
 	private $silent;
 	private $clients = array();
 	private $info  = array();
 	private $mh;
-	private $posts = array();
-	private $gets = array();
+	private $users = array();
 	private $results = array();
+	private $tests = array();	
 
 	/**
 	* Constructor.
@@ -54,11 +54,10 @@ class Simperium_User_Test{
 		
 		//	no arguments were passed.. we don't know what to do.. display help information instead..
 		if( !count($arguments) ){
-		    echo "Usage: php simperium_test.php --clients=<concurrent-clients-to-test> --bucket=<simperium-bucket> --token=<simperium-token> --appid=<app-id-to-test> --ip=<ip-address-to-test> --hostname=<hostname-to-pass>\n";
+		    echo "Usage: php simperium-users-test.php --clients=<concurrent-clients-to-test> --appid=<app-id-to-test> --apikey=<api-key-to-test> --ip=<ip-address-to-test> --hostname=<hostname-to-pass> -q\n";
 		    echo "    clients: The number of concurrent users hitting REST. (0-n where n is an Integer)\n";
-			echo "    bucket: simperium bucket\n";
-			echo "    token: simperium token\n";
 			echo "    appid: simperium app-id\n";
+			echo "    apikey: simperium api-key\n";
 			echo "    ip: ip address to test (optional)\n";		
 			echo "    hostname: hostname in headers (optional)\n";
 			echo "    port: port to connect to (optional)\n";
@@ -70,17 +69,15 @@ class Simperium_User_Test{
 		//	set default values...
 		$url = 'https://auth.simperium.com';
 		$hostname = '';
-		$token = '';
 		$appid = '';
-		$bucket = '';
+		$apikey = '';
 		$port = '';
 		$silent = false;
 		
 		if( isset($arguments['ip']) ) $url = $arguments['ip'];
 		if( isset($arguments['hostname']) ) $hostname = $arguments['hostname'];
-		if( isset($arguments['token']) ) $token = $arguments['token'];
 		if( isset($arguments['appid']) ) $appid = $arguments['appid'];
-		if( isset($arguments['bucket']) ) $bucket = $arguments['bucket'];
+		if( isset($arguments['apikey']) ) $apikey = $arguments['apikey'];
 		if( isset($arguments['port']) ) $port = $arguments['port'];
 		if( isset($arguments['q']) ) $silent = true;
 		
@@ -92,44 +89,68 @@ class Simperium_User_Test{
 		if ( empty($appid) ) {
 			die('Please specify a valid app id!');
 		}
-		if ( empty($token) ) {
-			die('Please specify a valid token!');
-		}
-		if ( empty($bucket) ) {
-			die('Please specify a valid bucket!');
-		}
 
 		//	parse the $url variable to see if there was a port in the url string (ie, http://127.0.0.1:8080)
 		$url = parse_url( $url );
 		$url = $url['scheme'].'://'.$url['host'];			
 		if( isset($url['port']) )	$port = $url['port'];
+
+		$this->tests['create'] = array();
+		$this->tests['authorize'] = array();
+		$this->tests['update'] = array();
+		$this->tests['delete'] = array();
 /*
-		We want to set up our post and get queries.
+		First, we'll set up a set of users to create,
 		
-		First, we loop through the number of concurrent connections we are setting up, and add  a url that is the same for both
-		post and get. 
+		Then we'll set up the $tests variable with our tests:
 		
-		In the post, we also create a unique post variable containing random text.
-		
-		We then add the same url to the gets function so we can make sure the new post we added to our bucket exists.
+		-	create a user
+		-	authorize said user to make sure he actually got created
+		-	update the user to change his password
+		-	delete said user to clean up after ourselves
 */
 		for ($i = 0; $i < $concurrent; $i++) {
-			$this->posts[] = array(
-				'url'=> $url.'/1/'.$appid.'/'.$bucket.'/i/'.$this->slug.'-'.$i,
+			$username = $this->generate_email();
+			$password = $this->generate_password();
+			$new_password = $this->generate_password();
+						
+			$this->tests['create'][] = array(
+				'url'=> $url.'/1/'.$appid.'/create/',
 				'port' => $port,
 				'post'=> array(
-					'text'=>$this->get_random_text()
+					'username'=>$username,
+					'password'=>$password
 				)
 			);
-			$this->gets[] = array(
-				'url'=> $url.'/1/'.$appid.'/'.$bucket.'/i/'.$this->slug.'-'.$i,
-				'port' => $port,					
+			$this->tests['authorize'][] = array(
+				'url'=> $url.'/1/'.$appid.'/authorize/',
+				'port' => $port,
+				'post'=> array(
+					'username'=>$username,
+					'password'=>$new_password
+				)
+			);
+			$this->tests['update'][] = array(
+				'url'=> $url.'/1/'.$appid.'/update/',
+				'port' => $port,
+				'post'=> array(
+					'username'=>$username,
+					'password'=>$password,
+					'new_password'=>$new_password
+				)
+			);
+			$this->tests['delete'][] = array(
+				'url'=> $url.'/1/'.$appid.'/delete/',
+				'port' => $port,
+				'post'=> array(
+					'username'=>$username
+				)
 			);
 		}
 
 		//	populate the values we set from the command-line:
 		$this->silent = $silent;
-		$this->token = $token;
+		$this->apikey = $apikey;
 		$this->hostname = $hostname;
 		$this->time = $this->microtime();
 
@@ -147,49 +168,29 @@ class Simperium_User_Test{
 	private function process(){
 		$this->time = $this->microtime();
 		$this->alert('Started at: ' . date('Y-m-d h:i:s') . '. PID: ' . getmypid());
-
-		$this->alert("Sending posts to simperium");
-		$this->multi_request( $this->posts, 0 );
-
-		$times = $this->results['post']['times'];
-		$msg = '';
-		$msg .= "------------------\n";
-		$msg .= "responses: " . count($times) . "\n";
-
-		$line = array();
-		foreach( $this->results['post']['status'] as $code=>$cnt ){
-			$line[] = "status code ".$code.": ".$cnt;
+		foreach($this->tests as $type => $posts ){
+			if( !count($posts) )	continue;
+			$this->alert("Sending {$type} to simperium");
+			$this->multi_request( $posts, 0, $type );
+			$times = $this->results[$type]['times'];
+			$msg = '';
+			$msg .= "------------------\n";
+			$msg .= "responses: " . count($times) . "\n";
+	
+			$line = array();
+			foreach( $this->results[$type]['status'] as $code=>$cnt ){
+				$line[] = "status code ".$code.": ".$cnt;
+			}
+			$msg .= implode("\n",$line)."\n";
+			$msg .= "------------------\n";
+	
+			$msg .= "min response time: " . min($times) . "s\n";
+			$msg .= "max response time: " . max($times) . "s\n";
+			$msg .= "median response time: " . $this->get_median($times) . "s\n";
+			$msg .= "mean response time: " . $this->get_mean($times) . "s\n";
+			$msg .= "------------------\n";
+			$this->alert($msg);
 		}
-		$msg .= implode("\n",$line)."\n";
-		$msg .= "------------------\n";
-
-		$msg .= "min response time: " . min($times) . "s\n";
-		$msg .= "max response time: " . max($times) . "s\n";
-		$msg .= "median response time: " . $this->get_median($times) . "s\n";
-		$msg .= "mean response time: " . $this->get_mean($times) . "s\n";
-		$msg .= "------------------\n";
-		$this->alert($msg);
-
-		$this->alert("Ok, now sending gets to simperium");
-		$this->multi_request( $this->gets, 1 );
-
-		$times = $this->results['get']['times'];
-		$msg = '';
-		$msg .= "------------------\n";
-		$msg .= "responses: " . count($times) . "\n";
-
-		$line = array();
-		foreach( $this->results['get']['status'] as $code=>$cnt ){
-			$line[] = "status code ".$code.": ".$cnt;
-		}
-		$msg .= implode("\n",$line)."\n";
-		$msg .= "------------------\n";
-
-		$msg .= "min response time: " . min($times) . "s\n";
-		$msg .= "max response time: " . max($times) . "s\n";
-		$msg .= "median response time: " . $this->get_median($times) . "s\n";
-		$msg .= "mean response time: " . $this->get_mean($times) . "s\n";
-		$this->alert($msg);
 		$this->alert('Finished at: ' . date('Y-m-d h:i:s') . '. PID: ' . getmypid());
 		exit;
 	}
@@ -212,9 +213,11 @@ class Simperium_User_Test{
 					@type	string	$post	post, this is a json string we send to Simperium
 	*			}
 	* )
+	* @param	int		$pipeline	Either 0 or 1, used to set the CURLMOPT_PIPELINING setting in curl.
+	* @param	string	$method		The test being conducted
 	*
 	*/
-	private function multi_request($urls, $pipeline = 0, $options = array()) {
+	private function multi_request($urls, $pipeline = 0, $method = 'get') {
 		$curly = array();
 		$result = array();
 		$mh = curl_multi_init();
@@ -228,7 +231,7 @@ class Simperium_User_Test{
 		foreach ($urls as $id => $data ) {
 			$curly[$id] = curl_init();
 			$headers = array();
-			$headers[] = 'X-Simperium-Token: '.$this->token;
+			$headers[] = 'X-Simperium-API-Key: '.$this->apikey;
 			if( $this->hostname != '' ){
 				$headers[] = 'Host: '.$this->hostname;
 			}
@@ -237,7 +240,6 @@ class Simperium_User_Test{
 			curl_setopt($curly[$id], CURLOPT_URL,            $url);
 			curl_setopt($curly[$id], CURLOPT_HEADER,         0);
 			curl_setopt($curly[$id], CURLOPT_RETURNTRANSFER, 1);
-			$method = 'get';
 			if (is_array($data)) {
 				//	set the port if a port was passed
 				if (!empty($data['port']) ){
@@ -245,16 +247,11 @@ class Simperium_User_Test{
 				}
 				//	if post was passed, then 
 				if (!empty($data['post']) ) {
-					$method = 'post';
 					curl_setopt($curly[$id], CURLOPT_POST,       1);
 					curl_setopt($curly[$id], CURLOPT_POSTFIELDS, json_encode($data['post']) );
 				}
 			}
 			
-			//	if any options were passed for this connection
-			if (!empty($options)) {
-				curl_setopt_array($curly[$id], $options);
-			}
 			//	add this curl connection to our multi so it will get run at once.
 			curl_multi_add_handle($mh, $curly[$id]);
 
@@ -314,6 +311,104 @@ class Simperium_User_Test{
 		curl_multi_close($mh);
 	}
 
+	/**
+	* generate_username.
+	*
+	* For our testing purposes, we're going to create some random users to use, this function lets us create a random username.
+	*
+	* @param  	int  	$min 				The minimum string length of the username
+	* @param  	int  	$max 				The maximum string length of the username
+	* @param  	bool  	$case_sensitive 	Whether the username is case sensitive or not
+	*
+	* @return	string	$username			The generated username
+	*/
+	private function generate_username( $min = 5, $max = 15, $case_sensitive = false ){
+		// Set length
+		$length = rand($min, $max);
+		
+		// Set allowed chars (And whether they should use case)
+		if ( $case_sensitive ){
+			$chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		}else{
+			$chars = "abcdefghijklmnopqrstuvwxyz";
+		}
+			
+		// Get string length
+		$chars_length = strlen($chars);
+		
+		// Create username char for char
+		$username = "";
+		
+		for ( $i = 0; $i < $length; $i++ ){
+			$username .= $chars[mt_rand(0, $chars_length)];
+		}
+		
+		return $username;
+	}
+
+	/**
+	* generate_email.
+	*
+	* Generates a random email address.
+	*
+	* First it grabs a random username from the generate_username, then it picks a random email domain from the $email_domains array.
+	* We then put these together into an email address.
+	*
+	* @param  	int  	$min 				The minimum string length of the username
+	* @param  	int  	$max 				The maximum string length of the username
+	* @param  	bool  	$case_sensitive 	Whether the username is case sensitive or not
+	*
+	* @return	float	$diff	Difference in seconds between $time and current microtime
+	*/
+	private function generate_email( $min = 5, $max = 15, $case_sensitive = false ){
+		$email_domains = array('gmail.com', 'yahoo.com', 'hotmail.com','automattic.com','google.com','live.com');
+		$username = $this->generate_username($min,$max,$case_sensitive);
+		
+		$tld = array_rand($email_domains,2);
+
+		$email = $username.'@'.$email_domains[ $tld[0] ];
+		return $email;
+	}	
+
+	/**
+	* generate_password.
+	*
+	* Returns randomly generated password.
+	*
+	* @param  	int  	$min 				The minimum string length of the password
+	* @param  	int  	$max 				The maximum string length of the password
+	*
+	* @return	string	$password			The randomly generated password
+	*/
+	private function generate_password( $min = 8, $max = 15){
+		// Set length
+		$length = rand($min, $max);
+	
+		// Set charachters to use
+		$lower = 'abcdefghijklmnopqrstuvwxyz';
+		$upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		$chars = '123456789@#$%&';
+		
+		// Calculate string length
+		$lower_length = strlen($lower);
+		$upper_length = strlen($upper);
+		$chars_length = strlen($chars);
+	
+		// Generate password char for char
+		$password = '';
+		$alt = time() % 2;
+		for ($i = 0; $i < $length; $i++){
+			if ($alt == 0){
+				$password .= $lower[mt_rand(0, $lower_length)]; $alt = 1;
+			}
+			if ($alt == 1){
+				$password .= $upper[mt_rand(0, $upper_length)]; $alt = 2;
+			}else{
+				$password .= $chars[mt_rand(0, $chars_length)]; $alt = 0;
+			}
+		}
+		return $password;
+	}
 
 	/**
 	* elapsed.

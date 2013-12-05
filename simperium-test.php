@@ -3,7 +3,7 @@
 /**
  * simperium-test.php
  *
- * Parallel load tester to test Simperium responses and requests.
+ * Parallel load tester to test Simperium Data API responses and requests.
  *
  * Call by:
  * 	
@@ -33,9 +33,8 @@ class Simperium_Test{
 	private $clients = array();
 	private $info  = array();
 	private $mh;
-	private $posts = array();
-	private $gets = array();
 	private $results = array();
+	private $tests = array();
 
 	/**
 	* Constructor.
@@ -54,7 +53,7 @@ class Simperium_Test{
 		
 		//	no arguments were passed.. we don't know what to do.. display help information instead..
 		if( !count($arguments) ){
-		    echo "Usage: php simperium_test.php --clients=<concurrent-clients-to-test> --bucket=<simperium-bucket> --token=<simperium-token> --appid=<app-id-to-test> --ip=<ip-address-to-test> --hostname=<hostname-to-pass>\n";
+		    echo "Usage: php simperium-test.php --clients=<concurrent-clients-to-test> --bucket=<simperium-bucket> --token=<simperium-token> --appid=<app-id-to-test> --ip=<ip-address-to-test> --hostname=<hostname-to-pass> -port=<port-to-connect-to> -q\n";
 		    echo "    clients: The number of concurrent users hitting REST. (0-n where n is an Integer)\n";
 			echo "    bucket: simperium bucket\n";
 			echo "    token: simperium token\n";
@@ -113,15 +112,18 @@ class Simperium_Test{
 		
 		We then add the same url to the gets function so we can make sure the new post we added to our bucket exists.
 */
+		$this->tests['post'] = array();
+		$this->tests['get'] = array();
+
 		for ($i = 0; $i < $concurrent; $i++) {
-			$this->posts[] = array(
+			$this->tests['post'][] = array(
 				'url'=> $url.'/1/'.$appid.'/'.$bucket.'/i/'.$this->slug.'-'.$i,
 				'port' => $port,
 				'post'=> array(
 					'text'=>$this->get_random_text()
 				)
 			);
-			$this->gets[] = array(
+			$this->tests['get'][] = array(
 				'url'=> $url.'/1/'.$appid.'/'.$bucket.'/i/'.$this->slug.'-'.$i,
 				'port' => $port,					
 			);
@@ -148,48 +150,29 @@ class Simperium_Test{
 		$this->time = $this->microtime();
 		$this->alert('Started at: ' . date('Y-m-d h:i:s') . '. PID: ' . getmypid());
 
-		$this->alert("Sending posts to simperium");
-		$this->multi_request( $this->posts, 0 );
-
-		$times = $this->results['post']['times'];
-		$msg = '';
-		$msg .= "------------------\n";
-		$msg .= "responses: " . count($times) . "\n";
-
-		$line = array();
-		foreach( $this->results['post']['status'] as $code=>$cnt ){
-			$line[] = "status code ".$code.": ".$cnt;
+		foreach($this->tests as $method => $posts ){
+			$this->alert("Sending {$method}s to simperium");
+			$this->multi_request( $posts, 0, $method );
+	
+			$times = $this->results[$method]['times'];
+			$msg = '';
+			$msg .= "------------------\n";
+			$msg .= "responses: " . count($times) . "\n";
+	
+			$line = array();
+			foreach( $this->results[$method]['status'] as $code=>$cnt ){
+				$line[] = "status code ".$code.": ".$cnt;
+			}
+			$msg .= implode("\n",$line)."\n";
+			$msg .= "------------------\n";
+	
+			$msg .= "min response time: " . min($times) . "s\n";
+			$msg .= "max response time: " . max($times) . "s\n";
+			$msg .= "median response time: " . $this->get_median($times) . "s\n";
+			$msg .= "mean response time: " . $this->get_mean($times) . "s\n";
+			$msg .= "------------------\n";
+			$this->alert($msg);
 		}
-		$msg .= implode("\n",$line)."\n";
-		$msg .= "------------------\n";
-
-		$msg .= "min response time: " . min($times) . "s\n";
-		$msg .= "max response time: " . max($times) . "s\n";
-		$msg .= "median response time: " . $this->get_median($times) . "s\n";
-		$msg .= "mean response time: " . $this->get_mean($times) . "s\n";
-		$msg .= "------------------\n";
-		$this->alert($msg);
-
-		$this->alert("Ok, now sending gets to simperium");
-		$this->multi_request( $this->gets, 1 );
-
-		$times = $this->results['get']['times'];
-		$msg = '';
-		$msg .= "------------------\n";
-		$msg .= "responses: " . count($times) . "\n";
-
-		$line = array();
-		foreach( $this->results['get']['status'] as $code=>$cnt ){
-			$line[] = "status code ".$code.": ".$cnt;
-		}
-		$msg .= implode("\n",$line)."\n";
-		$msg .= "------------------\n";
-
-		$msg .= "min response time: " . min($times) . "s\n";
-		$msg .= "max response time: " . max($times) . "s\n";
-		$msg .= "median response time: " . $this->get_median($times) . "s\n";
-		$msg .= "mean response time: " . $this->get_mean($times) . "s\n";
-		$this->alert($msg);
 		$this->alert('Finished at: ' . date('Y-m-d h:i:s') . '. PID: ' . getmypid());
 		exit;
 	}
@@ -212,9 +195,11 @@ class Simperium_Test{
 					@type	string	$post	post, this is a json string we send to Simperium
 	*			}
 	* )
+	* @param	int		$pipeline	Either 0 or 1, used to set the CURLMOPT_PIPELINING setting in curl.
+	* @param	string	$method		The test being conducted
 	*
 	*/
-	private function multi_request($urls, $pipeline = 0, $options = array()) {
+	private function multi_request($urls, $pipeline = 0, $method = 'get') {
 		$curly = array();
 		$result = array();
 		$mh = curl_multi_init();
@@ -237,7 +222,6 @@ class Simperium_Test{
 			curl_setopt($curly[$id], CURLOPT_URL,            $url);
 			curl_setopt($curly[$id], CURLOPT_HEADER,         0);
 			curl_setopt($curly[$id], CURLOPT_RETURNTRANSFER, 1);
-			$method = 'get';
 			if (is_array($data)) {
 				//	set the port if a port was passed
 				if (!empty($data['port']) ){
@@ -245,16 +229,11 @@ class Simperium_Test{
 				}
 				//	if post was passed, then 
 				if (!empty($data['post']) ) {
-					$method = 'post';
 					curl_setopt($curly[$id], CURLOPT_POST,       1);
 					curl_setopt($curly[$id], CURLOPT_POSTFIELDS, json_encode($data['post']) );
 				}
 			}
 			
-			//	if any options were passed for this connection
-			if (!empty($options)) {
-				curl_setopt_array($curly[$id], $options);
-			}
 			//	add this curl connection to our multi so it will get run at once.
 			curl_multi_add_handle($mh, $curly[$id]);
 
