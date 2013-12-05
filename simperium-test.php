@@ -10,63 +10,10 @@
  * php simperium-test.php --clients=<concurrent-clients-to-test> --token=<simperium-token> --appid=<app-id-to-test> --bucket=<bucket-to-test> --ip=<ip-address-to-test> --hostname=<hostname-to-pass> 	
 */
 date_default_timezone_set('America/Los_Angeles');
-$sites = array();
-$concurrent = 2;   // Any number.
-
-//	get arguments from command line and parse them into a usable array
-$arguments = get_arguments( $argv );
-
-//	no arguments were passed.. we don't know what to do.. display help information instead..
-if( !count($arguments) ){
-    echo "Usage: php simperium_test.php --clients=<concurrent-clients-to-test> --bucket=<simperium-bucket> --token=<simperium-token> --appid=<app-id-to-test> --ip=<ip-address-to-test> --hostname=<hostname-to-pass>\n";
-    echo "    clients: The number of concurrent users hitting REST. (0-n where n is an Integer)\n";
-	echo "    bucket: simperium bucket\n";
-	echo "    token: simperium token\n";
-	echo "    appid: simperium app-id\n";
-	echo "    ip: ip address to test (optional)\n";		
-	echo "    hostname: hostname in headers (optional)\n";
-	echo "    port: port to connect to (optional)\n";
-	echo "    q: only display summary\n";
-    echo "\n";
-	exit;		
-}
-
-//	set default values...
-$url = 'https://api.simperium.com';
-$hostname = '';
-$token = '';
-$appid = '';
-$bucket = '';
-$port = '';
-$silent = false;
-
-if( isset($arguments['ip']) ) $url = $arguments['ip'];
-if( isset($arguments['hostname']) ) $hostname = $arguments['hostname'];
-if( isset($arguments['token']) ) $token = $arguments['token'];
-if( isset($arguments['appid']) ) $appid = $arguments['appid'];
-if( isset($arguments['bucket']) ) $bucket = $arguments['bucket'];
-if( isset($arguments['port']) ) $port = $arguments['port'];
-if( isset($arguments['q']) ) $silent = true;
-
-$concurrent = $arguments['clients'];
-
-if ( empty($concurrent) || !is_numeric($concurrent) ) {
-	die('Please specify a valid clients value!');
-}
-if ( empty($appid) ) {
-	die('Please specify a valid app id!');
-}
-if ( empty($token) ) {
-	die('Please specify a valid token!');
-}
-if ( empty($bucket) ) {
-	die('Please specify a valid bucket!');
-}
 
 //	Load our Simperium_Test class and call process to begin the testing...
-$mc = new Simperium_Test($concurrent,$url,$appid,$bucket,$token,$hostname,$port,$silent);
+$mc = new Simperium_Test();
 $mc->process();
-
 
 /**
 * Simperium_Test.
@@ -98,18 +45,64 @@ class Simperium_Test{
 	* Constructor.
 	*
 	* The constructor function, handles setting up our inititial queries.
+	* It takes the arguments passed from the command-line and from there sets up our variables on how the test will behave.
 	*
-	* @param  	int  	$concurrent How many concurrent connections to run
-	* @param 	string 	$url		URL to connect to
-	* @param	string 	$appid		Simperium App Id to connect to
-	* @param	string 	$bucket		Simperium bucket to use
-	* @param	string	$token		Simperium Authorization token to use
-	* @param 	string	$hostname	Hostname to pass in headers
-	* @param 	int		$port		Port to connect to
-	* @param	bool	$silent		If true, displays summary only
+	* @global	array	$argv		Global array set inside php's core from CLI apps
 	*/		
-	public function __construct($concurrent,$url,$appid,$bucket,$token,$hostname='',$port='',$silent=false){
+	public function __construct(){
+		global $argv;
 		$this->slug = time();
+
+		//	get arguments from command line and parse them into a usable array
+		$arguments = $this->get_arguments( $argv );
+		
+		//	no arguments were passed.. we don't know what to do.. display help information instead..
+		if( !count($arguments) ){
+		    echo "Usage: php simperium_test.php --clients=<concurrent-clients-to-test> --bucket=<simperium-bucket> --token=<simperium-token> --appid=<app-id-to-test> --ip=<ip-address-to-test> --hostname=<hostname-to-pass>\n";
+		    echo "    clients: The number of concurrent users hitting REST. (0-n where n is an Integer)\n";
+			echo "    bucket: simperium bucket\n";
+			echo "    token: simperium token\n";
+			echo "    appid: simperium app-id\n";
+			echo "    ip: ip address to test (optional)\n";		
+			echo "    hostname: hostname in headers (optional)\n";
+			echo "    port: port to connect to (optional)\n";
+			echo "    q: only display summary\n";
+		    echo "\n";
+			exit;		
+		}
+		
+		//	set default values...
+		$url = 'https://api.simperium.com';
+		$hostname = '';
+		$token = '';
+		$appid = '';
+		$bucket = '';
+		$port = '';
+		$silent = false;
+		
+		if( isset($arguments['ip']) ) $url = $arguments['ip'];
+		if( isset($arguments['hostname']) ) $hostname = $arguments['hostname'];
+		if( isset($arguments['token']) ) $token = $arguments['token'];
+		if( isset($arguments['appid']) ) $appid = $arguments['appid'];
+		if( isset($arguments['bucket']) ) $bucket = $arguments['bucket'];
+		if( isset($arguments['port']) ) $port = $arguments['port'];
+		if( isset($arguments['q']) ) $silent = true;
+		
+		$concurrent = $arguments['clients'];
+		
+		if ( empty($concurrent) || !is_numeric($concurrent) ) {
+			die('Please specify a valid clients value!');
+		}
+		if ( empty($appid) ) {
+			die('Please specify a valid app id!');
+		}
+		if ( empty($token) ) {
+			die('Please specify a valid token!');
+		}
+		if ( empty($bucket) ) {
+			die('Please specify a valid bucket!');
+		}
+
 		//	parse the $url variable to see if there was a port in the url string (ie, http://127.0.0.1:8080)
 		$url = parse_url( $url );
 		$url = $url['scheme'].'://'.$url['host'];			
@@ -130,7 +123,7 @@ class Simperium_Test{
 				'url'=> $url.'/1/'.$appid.'/'.$bucket.'/i/'.$this->slug.'-'.$i,
 				'port' => $port,
 				'post'=> array(
-					'text'=>get_random_text()
+					'text'=>$this->get_random_text()
 				)
 			);
 			$this->gets[] = array(
@@ -424,6 +417,49 @@ class Simperium_Test{
 	}
 
 	/**
+	* get_arguments.
+	*
+	* Handy function for CLI-based apps that parse all arguments that start with -- or - and return an array with the key 
+	* as that argument and the variable
+	*
+	* @see		Constructor
+	*
+	* @param 	array	$argv	arguments passed from command line.
+	* @return	array	$_ARG	array of arguments where the key is the argument we passed, and the value is the value of said argument.
+	*							If not value was set (for example -q), then set set the value of the key to true.
+	* 
+	*/
+	private function get_arguments($argv) {
+		$_ARG = array();
+		foreach ($argv as $arg) {
+			if (ereg('--([^=]+)=(.*)',$arg,$reg)) {
+				$_ARG[$reg[1]] = $reg[2];
+			} elseif(ereg('-([a-zA-Z0-9])',$arg,$reg)) {
+				$_ARG[$reg[1]] = 'true';
+			}
+		}
+		return $_ARG;
+	}
+	
+	/**
+	* get_random_text.
+	*
+	* Generates a blob of random text that we can use for simulating our posts to Simperium.
+	*
+	* @return	string	$data	Randomly generated text.
+	* 
+	*/
+	private function get_random_text(){
+		$size = rand(1,20);
+		$data = '';
+		for( $i = 0;$i <= $size;$i++){
+			$data .= substr(md5(rand(0, 1000000)), 0, 35);
+		}
+		return $data;
+	}
+
+
+	/**
 	* destructor.
 	*
 	* This is the destructor, called when the class stops executing, in this case, we trigger an ob_end_clean to output any content.
@@ -432,43 +468,4 @@ class Simperium_Test{
 	public function __destruct() {
 		ob_end_clean();
 	}
-}
-
-/**
-* get_arguments.
-*
-* 	Handy function for CLI-based apps that parse all arguments that start with -- or - and return an array with the key as that argument and the variable
-*
-*	@param 	array	$argv	arguments passed from command line.
-*	@return	array	$_ARG	array of arguments where the key is the argument we passed, and the value is the value of said argument.
-*							If not value was set (for example -q), then set set the value of the key to true.
-* 
-*/
-function get_arguments($argv) {
-	$_ARG = array();
-	foreach ($argv as $arg) {
-		if (ereg('--([^=]+)=(.*)',$arg,$reg)) {
-			$_ARG[$reg[1]] = $reg[2];
-		} elseif(ereg('-([a-zA-Z0-9])',$arg,$reg)) {
-			$_ARG[$reg[1]] = 'true';
-		}
-	}
-	return $_ARG;
-}
-
-/**
-* get_random_text.
-*
-* 	Generates a blob of random text that we can use for simulating our posts to Simperium.
-*
-*	@return	string	$data	Randomly generated text.
-* 
-*/
-function get_random_text(){
-	$size = rand(1,20);
-	$data = '';
-	for( $i = 0;$i <= $size;$i++){
-		$data .= substr(md5(rand(0, 1000000)), 0, 35);
-	}
-	return $data;
 }
