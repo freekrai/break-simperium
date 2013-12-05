@@ -14,7 +14,7 @@ date_default_timezone_set('America/Los_Angeles');
 /**
 * Simperium_User_Test.
 *
-* Simperium_User_Test performs a set number of tests against the Simperium authorization API, based on the value of $concurrent.
+* Simperium_User_Test performs a set number of tests against the Simperium Authentication API, based on the value of $concurrent.
 * It will first add a set of users to simperium, then it will perform a series of tests to simperium based on the 
 * users it added.
 * 
@@ -362,11 +362,16 @@ class Simperium_User_Test{
 	*/
 	private function generate_email( $min = 5, $max = 15, $case_sensitive = false ){
 		$email_domains = array('gmail.com', 'yahoo.com', 'hotmail.com','automattic.com','google.com','live.com');
+
+		//	create a randomly generated username....
 		$username = $this->generate_username($min,$max,$case_sensitive);
 		
+		//	grab a random email domain..
 		$tld = array_rand($email_domains,2);
 
 		$email = $username.'@'.$email_domains[ $tld[0] ];
+		
+		//	return the randomly generated email address
 		return $email;
 	}	
 
