@@ -216,7 +216,7 @@ class Simperium_User_Test{
 	*           @type	array	$data{
 	*               @type	string	$url	URL to connect to
 	*               @type	int		$port	Port to connect to if a port was passed to use
-    *               @type	string	$post	post, this is a json string we send to Simperium
+	*               @type	string	$post	post, this is a json string we send to Simperium
 	*			}
 	* )
 	* @param    int    $pipeline    Either 0 or 1, used to set the CURLMOPT_PIPELINING setting in curl.
