@@ -132,7 +132,7 @@ class Simperium_User_Test{
 				'port' => $port,
 				'post'=> array(
 					'username'=>$username,
-					'password'=>$new_password
+					'password'=>$password
 				)
 			);
 			$this->tests['update'][] = array(
