@@ -152,7 +152,9 @@ class Simperium_Test{
 
 		foreach($this->tests as $method => $posts ){
 			$this->alert("Sending {$method}s to simperium");
-			$this->multi_request( $posts, 0, $method );
+			$pipeline = 0;
+			if( $method == 'get' )	$pipeline = 1;
+			$this->multi_request( $posts, $pipeline, $method );
 	
 			$times = $this->results[$method]['times'];
 			$msg = '';
