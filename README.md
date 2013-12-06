@@ -18,6 +18,7 @@ Where the arguments are as follow:
 - *ip*: ip address to test (optional)	
 - *hostname*: hostname in headers (optional)
 - *port*: port to use (optional)
+- *q*: silent, include summary report only (optional)
 
 This will perform a series of test posts to simperium to the bucket you've specified, the posts will occur parallel to each other, and will occur in two pieces.
 
@@ -74,7 +75,7 @@ We will test this with as many users as specified by the --clients argument.
 
 Running simperium-users-test.php is pretty simple, from the terminal type:
 
-	php simperium-users-test.php --clients=<concurrent-clients-to-test> --appid=<app-id-to-test> --apikey=<api-key-to-test> --ip=<ip-address-to-test> --hostname=<hostname-to-pass> --port=<port-to-connect-to> -q
+	php simperium-users-test.php --clients=<concurrent-clients-to-test> --appid=<app-id-to-test> --apikey=<api-key-to-test> --ip=<ip-address-to-test> --hostname=<hostname-to-pass> --port=<port-to-connect-to> -q -nodelete
 	
 Where the arguments are as follow:
 
@@ -84,5 +85,7 @@ Where the arguments are as follow:
 - *appid*: simperium app id
 - *hostname*: hostname in headers (optional)
 - *port*: port to use (optional)
+- *q*: silent, include summary report only (optional)
+- *nodelete*: don't perform delete test, leave the test users in the app. (optional)
 
 The report generated will appear similar to the simperium-test.php report.

@@ -7,7 +7,7 @@
  *
  * Call by:
  * 	
- * php simperium-users-test.php --clients=<concurrent-clients-to-test> --appid=<app-id-to-test> --apikey=<api-key-to-test> --ip=<ip-address-to-test> --hostname=<hostname-to-pass> -q
+ * php simperium-users-test.php --clients=<concurrent-clients-to-test> --appid=<app-id-to-test> --apikey=<api-key-to-test> --ip=<ip-address-to-test> --hostname=<hostname-to-pass> -q -nodelete
 */
 date_default_timezone_set('America/Los_Angeles');
 
@@ -15,8 +15,10 @@ date_default_timezone_set('America/Los_Angeles');
 * Simperium_User_Test.
 *
 * Simperium_User_Test performs a set number of tests against the Simperium Authentication API, based on the value of $concurrent.
+*
 * It will first add a set of users to simperium, then it will perform a series of tests to simperium based on the 
 * users it added.
+*
 * 
 * We will then return a report describing the results of the tests, and if any failures occurred.
 *
@@ -54,7 +56,7 @@ class Simperium_User_Test{
 		
 		//	no arguments were passed.. we don't know what to do.. display help information instead..
 		if( !count($arguments) ){
-		    echo "Usage: php simperium-users-test.php --clients=<concurrent-clients-to-test> --appid=<app-id-to-test> --apikey=<api-key-to-test> --ip=<ip-address-to-test> --hostname=<hostname-to-pass> -q\n";
+		    echo "Usage: php simperium-users-test.php --clients=<concurrent-clients-to-test> --appid=<app-id-to-test> --apikey=<api-key-to-test> --ip=<ip-address-to-test> --hostname=<hostname-to-pass> -q -nodelete\n";
 		    echo "    clients: The number of concurrent users hitting REST. (0-n where n is an Integer)\n";
 			echo "    appid: simperium app-id\n";
 			echo "    apikey: simperium api-key\n";
@@ -62,10 +64,11 @@ class Simperium_User_Test{
 			echo "    hostname: hostname in headers (optional)\n";
 			echo "    port: port to connect to (optional)\n";
 			echo "    q: only display summary\n";
+			echo "	  nodelete: don't delete the test users\n";
 		    echo "\n";
 			exit;		
 		}
-		
+
 		//	set default values...
 		$url = 'https://auth.simperium.com';
 		$hostname = '';
@@ -73,6 +76,7 @@ class Simperium_User_Test{
 		$apikey = '';
 		$port = '';
 		$silent = false;
+		$delete = true;
 		
 		if( isset($arguments['ip']) ) $url = $arguments['ip'];
 		if( isset($arguments['hostname']) ) $hostname = $arguments['hostname'];
@@ -80,6 +84,7 @@ class Simperium_User_Test{
 		if( isset($arguments['apikey']) ) $apikey = $arguments['apikey'];
 		if( isset($arguments['port']) ) $port = $arguments['port'];
 		if( isset($arguments['q']) ) $silent = true;
+		if( isset($arguments['nodelete']) ) $delete = false;
 		
 		$concurrent = $arguments['clients'];
 		
@@ -107,7 +112,7 @@ class Simperium_User_Test{
 		-	create a user
 		-	authorize said user to make sure he actually got created
 		-	update the user to change his password
-		-	delete said user to clean up after ourselves
+		-	delete said user to clean up after ourselves (unless -nodelete was passed in the command-line)
 */
 		for ($i = 0; $i < $concurrent; $i++) {
 			$username = $this->generate_email();
@@ -139,13 +144,15 @@ class Simperium_User_Test{
 					'new_password'=>$new_password
 				)
 			);
-			$this->tests['delete'][] = array(
-				'url'=> $url.'/1/'.$appid.'/delete/',
-				'port' => $port,
-				'post'=> array(
-					'username'=>$username
-				)
-			);
+			if( $delete ){
+				$this->tests['delete'][] = array(
+					'url'=> $url.'/1/'.$appid.'/delete/',
+					'port' => $port,
+					'post'=> array(
+						'username'=>$username
+					)
+				);
+			}
 		}
 
 		//	populate the values we set from the command-line:
@@ -389,7 +396,7 @@ class Simperium_User_Test{
 		// Set length
 		$length = rand($min, $max);
 	
-		// Set charachters to use
+		// Set characters to use
 		$lower = 'abcdefghijklmnopqrstuvwxyz';
 		$upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 		$chars = '123456789@#$%&';
@@ -547,6 +554,8 @@ class Simperium_User_Test{
 		foreach ($argv as $arg) {
 			if ( preg_match('/--(.*)=(.*)/',$arg,$reg) ) {
 				$_ARG[$reg[1]] = $reg[2];
+			} elseif( preg_match('/-(.*)/',$arg,$reg) ) {
+				$_ARG[$reg[1]] = 'true';
 			} elseif( preg_match('/-([a-zA-Z0-9])/',$arg,$reg) ) {
 				$_ARG[$reg[1]] = 'true';
 			}
