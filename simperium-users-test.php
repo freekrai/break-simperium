@@ -210,18 +210,18 @@ class Simperium_User_Test{
 	* query we performed.
 	* 
 	* @see		process
-	*
-	* @param 	array	$urls{
-	*			An array of urls to connect to
-	*			@type	int		$id		
-	*			@type	array	$data{
-	*				@type	string	$url	URL to connect to
-	*				@type	int		$port	Port to connect to if a port was passed to use
-					@type	string	$post	post, this is a json string we send to Simperium
+	* @param    array	$urls{
+	*           An array of urls to connect to
+	*           @type	int		$id		
+	*           @type	array	$data{
+	*               @type	string	$url	URL to connect to
+	*               @type	int		$port	Port to connect to if a port was passed to use
+    *               @type	string	$post	post, this is a json string we send to Simperium
 	*			}
 	* )
-	* @param	int		$pipeline	Either 0 or 1, used to set the CURLMOPT_PIPELINING setting in curl.
-	* @param	string	$method		The test being conducted
+	* @param    int    $pipeline    Either 0 or 1, used to set the CURLMOPT_PIPELINING setting in curl.
+	* @param    string    $method    The test being conducted
+	*
 	*
 	*/
 	private function multi_request($urls, $pipeline = 0, $method = 'get') {

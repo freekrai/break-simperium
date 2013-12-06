@@ -188,17 +188,17 @@ class Simperium_Test{
 	* 
 	* @see		process
 	*
-	* @param 	array	$urls{
-	*			An array of urls to connect to
-	*			@type	int		$id		
-	*			@type	array	$data{
-	*				@type	string	$url	URL to connect to
-	*				@type	int		$port	Port to connect to if a port was passed to use
-					@type	string	$post	post, this is a json string we send to Simperium
+	* @param    array	$urls{
+	*           An array of urls to connect to
+	*           @type	int		$id		
+	*           @type	array	$data{
+	*               @type	string	$url	URL to connect to
+	*               @type	int		$port	Port to connect to if a port was passed to use
+    *               @type	string	$post	post, this is a json string we send to Simperium
 	*			}
 	* )
-	* @param	int		$pipeline	Either 0 or 1, used to set the CURLMOPT_PIPELINING setting in curl.
-	* @param	string	$method		The test being conducted
+	* @param    int    $pipeline    Either 0 or 1, used to set the CURLMOPT_PIPELINING setting in curl.
+	* @param    string    $method    The test being conducted
 	*
 	*/
 	private function multi_request($urls, $pipeline = 0, $method = 'get') {
@@ -302,9 +302,9 @@ class Simperium_Test{
 	*
 	* Returns the time elapsed in seconds between two microtimes.
 	*
-	* @param  	float  	$time 	The time to compare it to, if it is 0, then we use the $time variable we initialized in the constructor.
+	* @param    float    $time    The time to compare it to, if it is 0, then we use the $time variable we initialized in the constructor.
 	*
-	* @return	float	$diff	Difference in seconds between $time and current microtime
+	* @return    float    $diff    Difference in seconds between $time and current microtime
 	*/
 	private function elapsed($time = 0) {
 		if (empty($time)) $time = $this->time;
@@ -318,7 +318,7 @@ class Simperium_Test{
 	*
 	* Returns the current microtime.
 	*
-	* @return	float		$microtime	The current microtime.
+	* @return    float    $microtime    The current microtime.
 	*/
 	private function microtime() {
 		return microtime(true);
