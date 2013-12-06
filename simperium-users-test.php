@@ -64,7 +64,7 @@ class Simperium_User_Test{
 			echo "    hostname: hostname in headers (optional)\n";
 			echo "    port: port to connect to (optional)\n";
 			echo "    q: only display summary\n";
-			echo "	  nodelete: don't delete the test users\n";
+			echo "    nodelete: don't delete the test users\n";
 		    echo "\n";
 			exit;		
 		}
